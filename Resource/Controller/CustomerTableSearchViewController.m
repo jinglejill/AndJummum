@@ -74,15 +74,6 @@ static NSString * const reuseIdentifierSearchBar = @"CustomTableViewCellSearchBa
     }
     
     [self setShadow:vwBottomShadow];
-    
-//    if([_customerTableList count] == 0)
-//    {
-//        [self loadingOverlayView];
-//        [self.homeModel downloadItems:dbCustomerTable withData:branch.dbName];
-//    }
-    
-    
-    
 }
 
 - (void)viewDidLoad

@@ -429,22 +429,11 @@
     {
         case dbMenuList:
         {
-            noteDataString = [NSString stringWithFormat:@"dbNameBranch=%@",(NSString *)data];
+            Branch *branch = (Branch *)data;
+            noteDataString = [NSString stringWithFormat:@"branchID=%ld",branch.branchID];
             url = [NSURL URLWithString:[Utility appendRandomParam:[Utility url:urlMenuGetList]]];
         }
             break;
-        case dbMenuNoteList:
-        {
-            noteDataString = [NSString stringWithFormat:@"dbNameBranch=%@",(NSString *)data];
-            url = [NSURL URLWithString:[Utility appendRandomParam:[Utility url:urlMenuNoteGetList]]];
-        }
-            break;
-        case dbCustomerTable:
-        {
-            noteDataString = [NSString stringWithFormat:@"dbNameBranch=%@",(NSString *)data];
-            url = [NSURL URLWithString:[Utility appendRandomParam:[Utility url:urlCustomerTableGetList]]];
-        }
-        break;
         case dbReceiptSummary:
         {
             NSArray *dataList = (NSArray *)data;
@@ -2195,10 +2184,10 @@
         case dbMenuNoteList:
         {
             NSArray *dataList = (NSArray *)data;
-            NSString *dbNameBranch = dataList[0];
+            Branch *branch = dataList[0];
             NSNumber *objMenuID = dataList[1];
             
-            noteDataString = [NSString stringWithFormat:@"dbNameBranch=%@&menuID=%ld",dbNameBranch,[objMenuID integerValue]];
+            noteDataString = [NSString stringWithFormat:@"branchID=%ld&menuID=%ld",branch.branchID,[objMenuID integerValue]];
             url = [NSURL URLWithString:[Utility appendRandomParam:[Utility url:urlMenuNoteGetList]]];
         }
             break;

@@ -165,7 +165,7 @@ static NSString * const reuseIdentifierSearchBar = @"CustomTableViewCellSearchBa
         [self loadingOverlayView];
         self.homeModel = [[HomeModel alloc]init];
         self.homeModel.delegate = self;
-        [self.homeModel downloadItems:dbMenuList withData:branch.dbName];
+        [self.homeModel downloadItems:dbMenuList withData:branch];
     }
     else
     {

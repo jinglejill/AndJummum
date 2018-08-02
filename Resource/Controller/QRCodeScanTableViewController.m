@@ -232,13 +232,6 @@
                     {
                         _performSegue = YES;
                         [self performSegueWithIdentifier:@"segMenuSelection" sender:self];
-                        
-                        
-//                        //check order openingTime
-//                        [self loadingOverlayView];
-//                        self.homeModel = [[HomeModel alloc]init];
-//                        self.homeModel.delegate = self;
-//                        [self.homeModel downloadItems:dbOpeningTime withData:_selectedBranch];
                     });
                 }
             }
@@ -263,21 +256,6 @@
     {
         [Utility updateSharedObject:items];
     }
-//    else if(homeModel.propCurrentDB == dbOpeningTime)
-//    {
-//        [self removeOverlayViews];
-//        NSMutableArray *messageList = items[0];
-//        Message *message = messageList[0];
-//        if([message.text integerValue])//open
-//        {
-//            [self performSegueWithIdentifier:@"segMenuSelection" sender:self];
-//        }
-//        else
-//        {
-//            NSString *message = [Setting getValue:@"124m" example:@"ทางร้านไม่ได้เปิดระบบการสั่งอาหารด้วยตัวเองตอนนี้ ขออภัยในความไม่สะดวกค่ะ"];
-//            [self showAlert:@"" message:message];
-//        }
-//    }
 }
 @end
 

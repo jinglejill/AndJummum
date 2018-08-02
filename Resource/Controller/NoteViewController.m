@@ -83,7 +83,7 @@ static NSString * const reuseIdentifierNote = @"CustomCollectionViewCellNote";
         //download menunote
         self.homeModel = [[HomeModel alloc]init];
         self.homeModel.delegate = self;
-        [self.homeModel downloadItems:dbMenuNoteList withData:@[branch.dbName,@(orderTaking.menuID)] completionBlock:^(BOOL succeeded, NSMutableArray *items)
+        [self.homeModel downloadItems:dbMenuNoteList withData:@[branch,@(orderTaking.menuID)] completionBlock:^(BOOL succeeded, NSMutableArray *items)
          {
              if (succeeded)
              {
