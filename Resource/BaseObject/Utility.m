@@ -194,6 +194,9 @@ extern NSString *globalModifiedUser;
         case urlLogInUserAccountInsert:
             url = @"/Android/AND_JUMMUM/JMMLogInUserAccountInsert.php";
             break;
+        case urlLogOutInsert:
+            url = @"/Android/AND_JUMMUM/JMMLogOutInsert.php";
+            break;
         case urlWriteLog:
             url = @"/Android/AND_JUMMUM/JMMWriteLog.php";
             break;
@@ -288,7 +291,10 @@ extern NSString *globalModifiedUser;
             url = @"/Android/AND_JUMMUM/JMMUserAccountUpdate.php";
             break;
         case urlTermsOfService:
-            url = @"/Android/AND_JUMMUM/HtmlTermsOfService.html";
+            url = @"/Android/AND_JUMMUM/HtmlTermsOfService.php";
+            break;
+        case urlContactUs:
+            url = @"/Android/AND_JUMMUM/HtmlContactUs.php";
             break;
         case urlUserAccountForgotPasswordInsert:
             url = @"/Android/AND_JUMMUM/JMMUserAccountForgotPasswordInsert.php";
@@ -315,7 +321,7 @@ extern NSString *globalModifiedUser;
             url = @"/Android/AND_JUMMUM/JMMRewardPointGet.php";
             break;
         case urlPrivacyPolicy:
-            url = @"/Android/AND_JUMMUM/HtmlPrivacyPolicy.html";
+            url = @"/Android/AND_JUMMUM/HtmlPrivacyPolicy.php";
             break;
         case urlPushReminder:
             url = @"/Android/AND_JUMMUM/JMMPushReminder.php";

@@ -83,19 +83,19 @@
     {
         NSString *title = [Setting getValue:@"064t" example:@"ข้อกำหนดและเงื่อนไขของ JUMMUM"];
         lblNavTitle.text = title;
-        [self webViewLoadUrl:@"http://www.jummum.co/jummum/HtmlTermsOfService.html"];
+        [self webViewLoadUrl:[Utility url:urlTermsOfService]];
     }
     else if(pageType == 2)
     {
         NSString *title = [Setting getValue:@"078t" example:@"นโยบายความเป็นส่วนตัว"];
         lblNavTitle.text = title;
-        [self webViewLoadUrl:@"http://www.jummum.co/jummum/HtmlPrivacyPolicy.html"];
+        [self webViewLoadUrl:[Utility url:urlPrivacyPolicy]];
     }
     else if(pageType == 3)
     {
         NSString *title = [Setting getValue:@"079t" example:@"ติดต่อ JUMMUM"];
         lblNavTitle.text = title;
-        [self webViewLoadUrl:@"http://www.jummum.co/jummum/HtmlContactUs.html"];
+        [self webViewLoadUrl:[Utility url:urlContactUs]];
     }
     
     [self addWebView:webViewContainer];

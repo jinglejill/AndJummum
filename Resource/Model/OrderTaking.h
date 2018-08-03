@@ -28,7 +28,7 @@
 
 @property (nonatomic) NSInteger menuOrderNo;
 @property (nonatomic) NSInteger subMenuOrderNo;
-@property (nonatomic) NSString *cancelDiscountReason;
+@property (nonatomic) NSInteger menuTypeOrderNo;
 
 
 

@@ -102,7 +102,7 @@
             break;
         case dbMenuList:
         {
-            arrClassName = @[@"Message",@"Menu",@"MenuType",@"MenuNote",@"Note",@"NoteType",@"SubMenuType",@"SpecialPriceProgram"];
+            arrClassName = @[@"Message",@"Menu",@"MenuType",@"Note",@"NoteType",@"SpecialPriceProgram"];
         }
             break;
         case dbMenuNoteList:
@@ -397,7 +397,7 @@
     }
     
 
-    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@&dbName=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser],[Utility dbName]];
+    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser]];
     
     
 
@@ -622,7 +622,7 @@
         default:
             break;
     }
-    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@&dbName=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser],[Utility dbName]];
+    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser]];
     NSLog(@"url: %@",url);
     NSLog(@"notedatastring: %@",noteDataString);
     
@@ -1046,10 +1046,16 @@
             url = [NSURL URLWithString:[Utility url:urlRatingInsertList]];
         }
         break;
+        case dbLogOut:
+        {
+            noteDataString = [Utility getNoteDataString:data];
+            url = [NSURL URLWithString:[Utility url:urlLogOutInsert]];
+        }
+            break;
         default:
             break;
     }
-    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@&dbName=%@&actionScreen=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser],[Utility dbName],actionScreen];
+    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@&actionScreen=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser],actionScreen];
     NSLog(@"url: %@",url);
     NSLog(@"notedatastring: %@",noteDataString);
     
@@ -1107,7 +1113,9 @@
                                 }
                                 else
                                 {
-                                    arrClassName = @[@"UserAccount",@"Receipt",@"OrderTaking",@"Menu",@"OrderNote",@"Note",@"NoteType"];
+//                                    @[@"Message",@"Menu",@"MenuType",@"MenuNote",@"Note",@"NoteType",@"SubMenuType",@"SpecialPriceProgram"];
+                                    arrClassName = @[@"UserAccount",@"Receipt",@"OrderTaking",@"Menu",@"MenuType",@"OrderNote",@"Note",@"NoteType"];
+//                                    arrClassName = @[@"UserAccount",@"Receipt",@"OrderTaking",@"Menu",@"OrderNote",@"Note",@"NoteType",@"MenuType",@"SubMenuType"];
                                 }
                             }
                             else if([strTableName isEqualToString:@"UserAccountForgotPassword"])
@@ -1518,7 +1526,7 @@
     }
     
     
-    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@&dbName=%@&actionScreen=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser],[Utility dbName],actionScreen];
+    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@&actionScreen=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser],actionScreen];
     NSLog(@"url: %@",url);
     NSLog(@"notedatastring: %@",noteDataString);
     
@@ -1872,7 +1880,7 @@
     }
     
     
-    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@&dbName=%@&actionScreen=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser],[Utility dbName],actionScreen];
+    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@&actionScreen=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser],actionScreen];
     NSLog(@"url: %@",url);
     NSLog(@"notedatastring: %@",noteDataString);
     
@@ -1933,7 +1941,7 @@
 {
     NSString *bodyPercentEscape = [Utility percentEscapeString:body];
     NSString *noteDataString = [NSString stringWithFormat:@"toAddress=%@&subject=%@&body=%@", toAddress,subject,bodyPercentEscape];
-    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@&dbName=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser],[Utility dbName]];
+    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser]];
     
     
     NSURLSessionConfiguration *defaultConfigObject = [NSURLSessionConfiguration defaultSessionConfiguration];
@@ -1994,7 +2002,7 @@
     if (imageData != nil)
     {
         NSString *noteDataString = @"";
-        noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@&dbName=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser],[Utility dbName]];
+        noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser]];
         
         NSURLSessionConfiguration *defaultConfigObject = [NSURLSessionConfiguration defaultSessionConfiguration];
         NSURLSession *defaultSession = [NSURLSession sessionWithConfiguration: defaultConfigObject delegate: nil delegateQueue: [NSOperationQueue mainQueue]];
@@ -2057,7 +2065,7 @@
 {
     NSString* escapeString = [Utility percentEscapeString:fileName];
     NSString *noteDataString = [NSString stringWithFormat:@"imageFileName=%@",escapeString];
-    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@&dbName=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser],[Utility dbName]];
+    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser]];
     NSURL * url = [NSURL URLWithString:[Utility url:urlDownloadPhoto]];
     
     
@@ -2117,7 +2125,7 @@
             break;
     }
     
-    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@&dbName=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser],[Utility dbName]];
+    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser]];
     NSLog(@"url: %@",url);
     NSLog(@"notedatastring: %@",noteDataString);
     
@@ -2225,7 +2233,7 @@
 {
     NSString* escapeString = [Utility percentEscapeString:fileName];
     NSString *noteDataString = [NSString stringWithFormat:@"fileName=%@",escapeString];
-    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@&dbName=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser],[Utility dbName]];
+    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser]];
     NSURL * url = [NSURL URLWithString:[Utility url:urlDownloadFile]];
     
     

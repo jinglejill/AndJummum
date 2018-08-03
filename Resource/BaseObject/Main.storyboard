@@ -1956,7 +1956,7 @@
                                 <fontDescription key="fontDescription" name="Prompt-Regular" family="Prompt" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="กรุณาใส่อีเมลที่คุณได้ลงทะเบียนไว้ เราจะส่งอีอีเมลเพื่อรีเซตรหัสผ่านไปให้คุณ" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ygi-j6-vsi">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="กรุณาใส่อีเมลที่คุณได้ลงทะเบียนไว้ เราจะส่งอีเมลเพื่อรีเซตรหัสผ่านไปให้คุณ" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ygi-j6-vsi">
                                 <rect key="frame" x="16" y="234.5" width="343" height="51"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="51" id="CrX-Y8-8Eb"/>

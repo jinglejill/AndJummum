@@ -197,4 +197,17 @@
     return [filterArray mutableCopy];
 }
 
++(Note *)getNote:(NSInteger)noteID branchID:(NSInteger)branchID
+{
+    NSMutableArray *dataList = [SharedNote sharedNote].noteList;
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"_noteID = %ld and branchID = %ld",noteID,branchID];
+    NSArray *filterArray = [dataList filteredArrayUsingPredicate:predicate];
+    if([filterArray count] > 0)
+    {
+        return filterArray[0];
+    }
+    return nil;
+}
+
+
 @end

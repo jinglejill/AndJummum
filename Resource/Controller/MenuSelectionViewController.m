@@ -428,26 +428,22 @@ static NSString * const reuseIdentifierSearchBar = @"CustomTableViewCellSearchBa
         
         _menuList = [items[1] mutableCopy];
         _menuTypeList = [items[2] mutableCopy];
-        _menuNoteList = [items[3] mutableCopy];
-        _noteList = [items[4] mutableCopy];
-        _noteTypeList = [items[5] mutableCopy];
-        _subMenuTypeList = [items[6] mutableCopy];
-        _specialPriceProgramList = [items[7] mutableCopy];
+        _noteList = [items[3] mutableCopy];
+        _noteTypeList = [items[4] mutableCopy];
+        _specialPriceProgramList = [items[5] mutableCopy];
         _menuTypeList = [MenuType sortList:_menuTypeList];
         
         
-        _menuList = [Menu setBranchID:branch.branchID menuList:_menuList];
+//        _menuList = [Menu setBranchID:branch.branchID menuList:_menuList];
         _filterMenuList = _menuList;
         [Menu setCurrentMenuList:_menuList];
         
-        
-        [Menu addListCheckDuplicate:_menuList];//ต้องเฉพาะไม่ซ้ำ
-        [MenuType setSharedData:_menuTypeList];
-        [MenuNote setSharedData:_menuNoteList];
-        [Note setSharedData:_noteList];
-        [NoteType setSharedData:_noteTypeList];
-        [SubMenuType setSharedData:_subMenuTypeList];
-        [SpecialPriceProgram setSharedData:_specialPriceProgramList];
+        [Utility updateSharedObject:items];
+//        [Menu addListCheckDuplicate:_menuList];//ต้องเฉพาะไม่ซ้ำ
+//        [MenuType setSharedData:_menuTypeList];
+//        [Note setSharedData:_noteList];
+//        [NoteType setSharedData:_noteTypeList];
+//        [SpecialPriceProgram setSharedData:_specialPriceProgramList];
         
         
         

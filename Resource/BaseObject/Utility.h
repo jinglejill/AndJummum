@@ -119,6 +119,7 @@ enum enumDB
     dbMaster,
     dbMasterWithProgressBar,
     dbLogIn,
+    dbLogOut,
     dbLogInUserAccount,
     dbPushSync,
     dbPushSyncUpdateByDeviceToken,
@@ -197,6 +198,7 @@ enum enumUrl
     urlUserAccountDeviceTokenUpdate,
     urlLogInUserAccountInsert,
     urlLogInInsert,
+    urlLogOutInsert,
     urlPushSyncSync,
     urlPushSyncUpdateByDeviceToken,
     urlDeviceInsert,
@@ -322,7 +324,8 @@ enum enumUrl
     urlMenuNoteInsertList,
     urlMenuNoteUpdateList,
     urlMenuNoteDeleteList,
-    urlOpeningTimeGet
+    urlOpeningTimeGet,
+    urlContactUs
     
 
     

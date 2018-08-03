@@ -29,6 +29,7 @@
 #import "CustomTableViewCellImageText.h"
 #import "CustomTableViewCellProfile.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
+#import "LogIn.h"
 
 
 @interface MeViewController ()
@@ -304,6 +305,9 @@ static NSString * const reuseIdentifierProfile = @"CustomTableViewCellProfile";
                     
                     [self removeMemberData];
                     [self removeOverlayViews];
+                    UserAccount *userAccount = [UserAccount getCurrentUserAccount];
+                    LogIn *logIn = [[LogIn alloc]initWithUsername:userAccount.username status:-1 deviceToken:[Utility deviceToken]];
+                    [self.homeModel insertItems:dbLogOut withData:logIn actionScreen:@"log out in Me screen"];
                     [self showAlert:@"" message:@"ออกจากระบบสำเร็จ" method:@selector(unwindToLogIn)];
                 }
                     break;

@@ -219,6 +219,8 @@
         item.menuOrderNo = menu.orderNo;
         SubMenuType *subMenuType = [SubMenuType getSubMenuType:menu.subMenuTypeID];
         item.subMenuOrderNo = subMenuType.orderNo;
+        MenuType *menuType = [MenuType getMenuType:menu.menuTypeID];
+        item.menuTypeOrderNo = menuType.orderNo;
         
         
 //        OrderCancelDiscount *orderCancelDiscount = [OrderCancelDiscount getOrderCancelDiscount:item.orderTakingID];
@@ -229,12 +231,13 @@
     //sort
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"_status" ascending:YES];
     NSSortDescriptor *sortDescriptor2 = [[NSSortDescriptor alloc] initWithKey:@"_takeAway" ascending:YES];
+    NSSortDescriptor *sortDescriptor3_0 = [[NSSortDescriptor alloc] initWithKey:@"_menuTypeOrderNo" ascending:YES];
     NSSortDescriptor *sortDescriptor3 = [[NSSortDescriptor alloc] initWithKey:@"_subMenuOrderNo" ascending:YES];
     NSSortDescriptor *sortDescriptor4 = [[NSSortDescriptor alloc] initWithKey:@"_menuOrderNo" ascending:YES];
     NSSortDescriptor *sortDescriptor5 = [[NSSortDescriptor alloc] initWithKey:@"_noteIDListInText" ascending:YES];
     NSSortDescriptor *sortDescriptor6 = [[NSSortDescriptor alloc] initWithKey:@"_specialPrice" ascending:NO];
 //    NSSortDescriptor *sortDescriptor7 = [[NSSortDescriptor alloc] initWithKey:@"_cancelDiscountReason" ascending:YES];
-    NSArray *sortDescriptors = [NSArray arrayWithObjects:sortDescriptor,sortDescriptor2,sortDescriptor3,sortDescriptor4,sortDescriptor5,sortDescriptor6,nil];
+    NSArray *sortDescriptors = [NSArray arrayWithObjects:sortDescriptor,sortDescriptor2,sortDescriptor3_0,sortDescriptor3,sortDescriptor4,sortDescriptor5,sortDescriptor6,nil];
     NSArray *sortArray = [orderTakingList sortedArrayUsingDescriptors:sortDescriptors];
     
     
