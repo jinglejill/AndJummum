@@ -479,6 +479,9 @@ extern NSString *globalModifiedUser;
         case urlBranchGetList:
             url = @"/Android/AND_JUMMUM/JMMBranchGetList.php";
             break;
+        case urlBranchAndCustomerTableGet:
+            url = @"/Android/AND_JUMMUM/JMMBranchAndCustomerTableGet.php";
+            break;
         case urlHotDealWithBranchGetList:
             url = @"/Android/AND_JUMMUM/JMMHotDealWithBranchIDGetList.php";
             break;
@@ -1029,7 +1032,7 @@ extern NSString *globalModifiedUser;
 
 + (NSString *)getMasterClassName:(NSInteger)i
 {
-    NSArray *arrMasterClass = @[@"Branch",@"CustomerTable",@"Setting"];
+    NSArray *arrMasterClass = @[@"Setting"];
     
     
     return arrMasterClass[i];

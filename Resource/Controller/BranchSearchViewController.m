@@ -64,10 +64,10 @@ static NSString * const reuseIdentifierMenu = @"CustomTableViewCellMenu";
     [super viewDidAppear:animated];
     
     
-    self.homeModel = [[HomeModel alloc]init];
-    self.homeModel.delegate = self;
-    Branch *branchWithMaxModifiedDate = [Branch getBranchWithMaxModifiedDate];
-    [self.homeModel downloadItems:dbBranch withData:branchWithMaxModifiedDate.modifiedDate];
+//    self.homeModel = [[HomeModel alloc]init];
+//    self.homeModel.delegate = self;
+//    Branch *branchWithMaxModifiedDate = [Branch getBranchWithMaxModifiedDate];
+//    [self.homeModel downloadItems:dbBranch withData:branchWithMaxModifiedDate.modifiedDate];
 }
 
 -(void)loadView

@@ -118,9 +118,9 @@
         case dbReceiptSummary:
         case dbReceiptMaxModifiedDate:
         {
-            arrClassName = @[@"Receipt",@"OrderTaking",@"OrderNote",@"Menu"];
+            arrClassName = @[@"Receipt",@"Branch",@"OrderTaking",@"Menu",@"MenuType",@"OrderNote",@"Note",@"NoteType"];
         }
-            break;
+            break;        
         case dbPromotion:
         {
             arrClassName = @[@"Promotion",@"Message",@"Message"];
@@ -183,6 +183,7 @@
         }
         break;
         case dbBranch:
+        case dbBranchAndCustomerTable:
         {
             arrClassName = @[@"Branch",@"CustomerTable"];
         }
@@ -257,7 +258,7 @@
             // Ready to notify delegate that data is ready and pass back items
             if (self.delegate)
             {
-                if(propCurrentDB == dbHotDeal || propCurrentDB == dbHotDealWithBranchID || propCurrentDB == dbReceiptSummary || propCurrentDB == dbReceiptMaxModifiedDate ||propCurrentDB == dbRewardPoint || propCurrentDB == dbRewardRedemptionWithBranchID || propCurrentDB == dbReceipt || propCurrentDB == dbOpeningTime || propCurrentDB == dbReceiptDisputeRating || propCurrentDB == dbReceiptDisputeRatingAllAfterReceipt || propCurrentDB == dbReceiptDisputeRatingUpdateAndReload || propCurrentDB == dbReceiptDisputeRatingAllAfterReceiptUpdateAndReload || propCurrentDB == dbMenuList || propCurrentDB == dbMenuNoteList)
+                if(propCurrentDB == dbHotDeal || propCurrentDB == dbHotDealWithBranchID || propCurrentDB == dbReceiptSummary || propCurrentDB == dbReceiptMaxModifiedDate ||propCurrentDB == dbRewardPoint || propCurrentDB == dbRewardRedemptionWithBranchID || propCurrentDB == dbReceipt || propCurrentDB == dbOpeningTime || propCurrentDB == dbReceiptDisputeRating || propCurrentDB == dbReceiptDisputeRatingAllAfterReceipt || propCurrentDB == dbReceiptDisputeRatingUpdateAndReload || propCurrentDB == dbReceiptDisputeRatingAllAfterReceiptUpdateAndReload || propCurrentDB == dbMenuList || propCurrentDB == dbMenuNoteList || propCurrentDB == dbBranchAndCustomerTable)
                 {
                     [self.delegate itemsDownloaded:arrItem manager:self];
                 }
@@ -440,7 +441,7 @@
             Receipt *receipt = (Receipt *)dataList[0];
             UserAccount *userAccount = dataList[1];
             
-            noteDataString = [NSString stringWithFormat:@"receiptDate=%@&receiptID=%ld&userAccountID=%ld",receipt.receiptDate,receipt.receiptID,userAccount.userAccountID];
+            noteDataString = [NSString stringWithFormat:@"receiptDate=%@&receiptID=%ld&memberID=%ld",receipt.receiptDate,receipt.receiptID,userAccount.userAccountID];
             url = [NSURL URLWithString:[Utility appendRandomParam:[Utility url:urlReceiptSummaryGetList]]];
         }
             break;
@@ -617,6 +618,15 @@
         {            
             noteDataString = [Utility getNoteDataString:data];
             url = [NSURL URLWithString:[Utility appendRandomParam:[Utility url:urlOpeningTimeGet]]];
+        }
+            break;
+        case dbBranchAndCustomerTable:
+        {
+            NSArray *dataList = (NSArray *)data;
+            NSNumber *objBranchID = dataList[0];
+            NSNumber *objCustomerTableID = dataList[1];
+            noteDataString = [NSString stringWithFormat:@"branchID=%ld&customerTableID=%ld",[objBranchID integerValue],[objCustomerTableID integerValue]];
+            url = [NSURL URLWithString:[Utility appendRandomParam:[Utility url:urlBranchAndCustomerTableGet]]];
         }
             break;
         default:
@@ -1114,7 +1124,7 @@
                                 else
                                 {
 //                                    @[@"Message",@"Menu",@"MenuType",@"MenuNote",@"Note",@"NoteType",@"SubMenuType",@"SpecialPriceProgram"];
-                                    arrClassName = @[@"UserAccount",@"Receipt",@"OrderTaking",@"Menu",@"MenuType",@"OrderNote",@"Note",@"NoteType"];
+                                    arrClassName = @[@"UserAccount",@"Receipt",@"Branch",@"OrderTaking",@"Menu",@"MenuType",@"OrderNote",@"Note",@"NoteType"];
 //                                    arrClassName = @[@"UserAccount",@"Receipt",@"OrderTaking",@"Menu",@"OrderNote",@"Note",@"NoteType",@"MenuType",@"SubMenuType"];
                                 }
                             }
@@ -2066,6 +2076,51 @@
     NSString* escapeString = [Utility percentEscapeString:fileName];
     NSString *noteDataString = [NSString stringWithFormat:@"imageFileName=%@",escapeString];
     noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser]];
+    NSURL * url = [NSURL URLWithString:[Utility url:urlDownloadPhoto]];
+    
+    
+    NSURLSessionConfiguration *defaultConfigObject = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *defaultSession = [NSURLSession sessionWithConfiguration: defaultConfigObject delegate: nil delegateQueue: [NSOperationQueue mainQueue]];
+    
+    NSMutableURLRequest * urlRequest = [NSMutableURLRequest requestWithURL:url];
+    [urlRequest setHTTPMethod:@"POST"];
+    [urlRequest setHTTPBody:[noteDataString dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    NSURLSessionDataTask * dataTask =[defaultSession dataTaskWithRequest:urlRequest completionHandler:^(NSData *dataRaw, NSURLResponse *header, NSError *error) {
+        if(error)
+        {
+            completionBlock(NO,nil);
+        }
+        else
+        {
+            NSDictionary *json = [NSJSONSerialization
+                                  JSONObjectWithData:dataRaw
+                                  options:kNilOptions error:&error];
+            
+            
+            NSString *base64String = json[@"base64String"];
+            if(json && base64String && ![base64String isEqualToString:@""])
+            {
+                NSData *nsDataEncrypted = [[NSData alloc] initWithBase64EncodedString:base64String options:NSDataBase64DecodingIgnoreUnknownCharacters];
+                
+                UIImage *image = [[UIImage alloc] initWithData:nsDataEncrypted];
+                completionBlock(YES,image);
+            }
+            else
+            {
+                completionBlock(NO,nil);
+            }
+        }
+    }];
+    
+    [dataTask resume];
+}
+
+- (void)downloadImageWithFileName:(NSString *)fileName type:(NSInteger)type branchID:(NSInteger)branchID completionBlock:(void (^)(BOOL succeeded, UIImage *image))completionBlock
+{
+    NSString* escapeString = [Utility percentEscapeString:fileName];
+    NSString *noteDataString = [NSString stringWithFormat:@"imageFileName=%@",escapeString];
+    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@&type=%ld&branchID=%ld",noteDataString,[Utility deviceToken],[Utility modifiedUser],type,branchID];
     NSURL * url = [NSURL URLWithString:[Utility url:urlDownloadPhoto]];
     
     

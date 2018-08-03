@@ -315,7 +315,7 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
         }
         else
         {
-            [self.homeModel downloadImageWithFileName:imageFileName completionBlock:^(BOOL succeeded, UIImage *image)
+            [self.homeModel downloadImageWithFileName:menu.imageUrl type:1 branchID:menu.branchID completionBlock:^(BOOL succeeded, UIImage *image)
              {
                  if (succeeded)
                  {
