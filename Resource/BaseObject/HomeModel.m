@@ -192,7 +192,13 @@
         {
             arrClassName = @[@"Message"];
         }
-            break;        
+            break;
+        case dbBranchSearch:
+        case dbBranchSearchMore:
+        {
+            arrClassName = @[@"Branch"];
+        }
+            break;
         default:
             break;
     }
@@ -258,7 +264,7 @@
             // Ready to notify delegate that data is ready and pass back items
             if (self.delegate)
             {
-                if(propCurrentDB == dbHotDeal || propCurrentDB == dbHotDealWithBranchID || propCurrentDB == dbReceiptSummary || propCurrentDB == dbReceiptMaxModifiedDate ||propCurrentDB == dbRewardPoint || propCurrentDB == dbRewardRedemptionWithBranchID || propCurrentDB == dbReceipt || propCurrentDB == dbOpeningTime || propCurrentDB == dbReceiptDisputeRating || propCurrentDB == dbReceiptDisputeRatingAllAfterReceipt || propCurrentDB == dbReceiptDisputeRatingUpdateAndReload || propCurrentDB == dbReceiptDisputeRatingAllAfterReceiptUpdateAndReload || propCurrentDB == dbMenuList || propCurrentDB == dbMenuNoteList || propCurrentDB == dbBranchAndCustomerTable)
+                if(propCurrentDB == dbHotDeal || propCurrentDB == dbHotDealWithBranchID || propCurrentDB == dbReceiptSummary || propCurrentDB == dbReceiptMaxModifiedDate ||propCurrentDB == dbRewardPoint || propCurrentDB == dbRewardRedemptionWithBranchID || propCurrentDB == dbReceipt || propCurrentDB == dbOpeningTime || propCurrentDB == dbReceiptDisputeRating || propCurrentDB == dbReceiptDisputeRatingAllAfterReceipt || propCurrentDB == dbReceiptDisputeRatingUpdateAndReload || propCurrentDB == dbReceiptDisputeRatingAllAfterReceiptUpdateAndReload || propCurrentDB == dbMenuList || propCurrentDB == dbMenuNoteList || propCurrentDB == dbBranchAndCustomerTable || propCurrentDB == dbBranchSearch || propCurrentDB == dbBranchSearchMore || propCurrentDB == dbCustomerTable)
                 {
                     [self.delegate itemsDownloaded:arrItem manager:self];
                 }
@@ -441,7 +447,7 @@
             Receipt *receipt = (Receipt *)dataList[0];
             UserAccount *userAccount = dataList[1];
             
-            noteDataString = [NSString stringWithFormat:@"receiptDate=%@&receiptID=%ld&memberID=%ld",receipt.receiptDate,receipt.receiptID,userAccount.userAccountID];
+            noteDataString = [NSString stringWithFormat:@"receiptDate=%@&memberID=%ld",receipt.receiptDate,userAccount.userAccountID];
             url = [NSURL URLWithString:[Utility appendRandomParam:[Utility url:urlReceiptSummaryGetList]]];
         }
             break;
@@ -627,6 +633,28 @@
             NSNumber *objCustomerTableID = dataList[1];
             noteDataString = [NSString stringWithFormat:@"branchID=%ld&customerTableID=%ld",[objBranchID integerValue],[objCustomerTableID integerValue]];
             url = [NSURL URLWithString:[Utility appendRandomParam:[Utility url:urlBranchAndCustomerTableGet]]];
+        }
+            break;
+        case dbBranchSearch:
+        {
+            noteDataString = [NSString stringWithFormat:@"searchText=%@",data];
+            url = [NSURL URLWithString:[Utility appendRandomParam:[Utility url:urlBranchSearchGetList]]];
+        }
+            break;
+        case dbBranchSearchMore:
+        {
+            NSArray *dataList = (NSArray *)data;
+            NSString *searchText = dataList[0];
+            Branch *branch = dataList[1];
+            noteDataString = [NSString stringWithFormat:@"searchText=%@&name=%@",searchText,branch.name];
+            url = [NSURL URLWithString:[Utility appendRandomParam:[Utility url:urlBranchSearchMoreGetList]]];
+        }
+            break;
+        case dbCustomerTable:
+        {
+            Branch *branch = (Branch *)data;
+            noteDataString = [NSString stringWithFormat:@"branchID=%ld",branch.branchID];
+            url = [NSURL URLWithString:[Utility appendRandomParam:[Utility url:urlCustomerTableGetList]]];
         }
             break;
         default:
@@ -1180,12 +1208,13 @@
                                 [self.delegate itemsInsertedWithReturnData:dataList];
                                 NSLog(@"msg: %@", msg);
                             }
-                            
-                            
-                            NSString *msg = json[@"msg"];
-                            [self.delegate alertMsg:msg];
-                            NSLog(@"status: %@", status);
-                            NSLog(@"msg: %@", msg);
+                            else
+                            {
+                                NSString *msg = json[@"msg"];
+                                [self.delegate alertMsg:msg];
+                                NSLog(@"status: %@", status);
+                                NSLog(@"msg: %@", msg);
+                            }
                         }                                        
                     }
                     else

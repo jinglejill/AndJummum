@@ -1745,6 +1745,7 @@ static NSString * const reuseIdentifierLabelTextView = @"CustomTableViewCellLabe
 {
     if([items count] == 1)
     {
+        [self removeWaitingView];
         _btnPay.enabled = YES;
         NSMutableArray *messageList = items[0];
         Message *message = messageList[0];
@@ -1760,7 +1761,6 @@ static NSString * const reuseIdentifierLabelTextView = @"CustomTableViewCellLabe
         NSMutableArray *receiptList = items[0];
         Receipt *receipt = receiptList[0];
         _receipt = receipt;
-//        [self.homeModel insertItems:dbPushReminder withData:@[branch,receipt] actionScreen:@"push reminder"];
         [self performSegueWithIdentifier:@"segPaymentComplete" sender:self];
     }
     

@@ -482,6 +482,12 @@ extern NSString *globalModifiedUser;
         case urlBranchAndCustomerTableGet:
             url = @"/Android/AND_JUMMUM/JMMBranchAndCustomerTableGet.php";
             break;
+        case urlBranchSearchGetList:
+            url = @"/Android/AND_JUMMUM/JMMBranchSearchGetList.php";
+            break;
+        case urlBranchSearchMoreGetList:
+            url = @"/Android/AND_JUMMUM/JMMBranchSearchMoreGetList.php";
+            break;
         case urlHotDealWithBranchGetList:
             url = @"/Android/AND_JUMMUM/JMMHotDealWithBranchIDGetList.php";
             break;
