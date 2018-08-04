@@ -470,7 +470,7 @@ minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
     
     
     //update ordertaking price
-    float takeAwayFee = orderTaking.takeAway?[[Setting getSettingValueWithKeyName:@"takeAwayFee"] floatValue]:0;
+    float takeAwayFee = orderTaking.takeAway?branch.takeAwayFee:0;
     Menu *menu = [Menu getMenu:orderTaking.menuID branchID:branch.branchID];
     SpecialPriceProgram *specialPriceProgram = [SpecialPriceProgram getSpecialPriceProgramTodayWithMenuID:menu.menuID branchID:branch.branchID];
     float specialPrice = specialPriceProgram?specialPriceProgram.specialPrice:menu.price;
