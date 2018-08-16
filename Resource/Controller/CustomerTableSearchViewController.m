@@ -41,7 +41,6 @@ static NSString * const reuseIdentifierSearchBar = @"CustomTableViewCellSearchBa
 @synthesize customerTable;
 @synthesize btnBack;
 @synthesize topViewHeight;
-@synthesize bottomViewHeight;
 
 
 -(IBAction)unwindToCustomerTableSearch:(UIStoryboardSegue *)segue
@@ -53,7 +52,7 @@ static NSString * const reuseIdentifierSearchBar = @"CustomTableViewCellSearchBa
 {
     [super viewDidLayoutSubviews];
     UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    bottomViewHeight.constant = window.safeAreaInsets.bottom;
+    
     
     float topPadding = window.safeAreaInsets.top;
     topViewHeight.constant = topPadding == 0?20:topPadding;
@@ -70,7 +69,7 @@ static NSString * const reuseIdentifierSearchBar = @"CustomTableViewCellSearchBa
     }
     else
     {
-        btnBack.imageView.image = [UIImage imageNamed:@"home_icon.png"];
+        btnBack.imageView.image = [UIImage imageNamed:@"home_icon_red.png"];
     }
     
     [self setShadow:vwBottomShadow];
@@ -145,6 +144,7 @@ static NSString * const reuseIdentifierSearchBar = @"CustomTableViewCellSearchBa
             cell.sbText.delegate = self;
             cell.sbText.tag = 300;
             cell.sbText.placeholder = message;
+            [cell.sbText setInputAccessoryView:self.toolBar];
             UITextField *textField = [cell.sbText valueForKey:@"searchField"];
             textField.layer.borderColor = [cTextFieldBorder CGColor];
             textField.layer.borderWidth = 1;

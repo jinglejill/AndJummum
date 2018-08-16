@@ -1,14 +1,14 @@
 //
-//  CustomTableViewCellLogo.m
+//  CustomTableViewCellSeparatorLine.m
 //  Jummum2
 //
-//  Created by Thidaporn Kijkamjai on 7/7/2561 BE.
+//  Created by Thidaporn Kijkamjai on 11/8/2561 BE.
 //  Copyright © 2561 Appxelent. All rights reserved.
 //
 
-#import "CustomTableViewCellLogo.h"
+#import "CustomTableViewCellSeparatorLine.h"
 
-@implementation CustomTableViewCellLogo
+@implementation CustomTableViewCellSeparatorLine
 
 - (void)awakeFromNib {
     [super awakeFromNib];
@@ -21,9 +21,4 @@
     // Configure the view for the selected state
 }
 
--(void)prepareForReuse
-{
-    [super prepareForReuse];
-    self.imgVwValue.image = [UIImage imageNamed:@"NoImage.jpg"];
-}
 @end

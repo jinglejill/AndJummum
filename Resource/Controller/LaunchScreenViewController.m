@@ -29,7 +29,11 @@
 
 -(IBAction)unwindToLaunchScreen:(UIStoryboardSegue *)segue
 {
-    _redirectToLogin = YES;
+    NSString *strVersionType = [Setting getSettingValueWithKeyName:@"NewVersionType"];
+    if([strVersionType isEqualToString:@"1"])
+    {
+        _redirectToLogin = YES;
+    }
     progressBar.progress = 0;
     [self.homeModel downloadItems:dbMasterWithProgressBar];
 }
@@ -121,7 +125,6 @@
             {
                 [self performSegueWithIdentifier:@"segLogIn" sender:self];
             }
-            
         }
     }
 }

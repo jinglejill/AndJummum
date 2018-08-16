@@ -21,6 +21,7 @@
 #import "Setting.h"
 #import "Utility.h"
 #import "Message.h"
+#import "CreditCard.h"
 
 
 @interface MenuSelectionViewController ()
@@ -143,8 +144,9 @@ static NSString * const reuseIdentifierSearchBar = @"CustomTableViewCellSearchBa
         }
         else
         {
-            [OrderTaking removeCurrentOrderTakingList];
             [Menu removeCurrentMenuList];
+            [OrderTaking removeCurrentOrderTakingList];            
+            [CreditCard removeCurrentCreditCard];
             lblTotalQuantity.text = @"0";
             lblTotalQuantityTop.text = @"";
             lblTotalAmount.text = [Utility addPrefixBahtSymbol:@"0.00"];
@@ -256,6 +258,7 @@ static NSString * const reuseIdentifierSearchBar = @"CustomTableViewCellSearchBa
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             cell.sbText.delegate = self;
             cell.sbText.tag = 300;
+            [cell.sbText setInputAccessoryView:self.toolBar];
             UITextField *textField = [cell.sbText valueForKey:@"searchField"];
             textField.layer.borderColor = [cTextFieldBorder CGColor];
             textField.layer.borderWidth = 1;

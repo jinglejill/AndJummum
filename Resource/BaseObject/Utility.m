@@ -159,403 +159,406 @@ extern NSString *globalModifiedUser;
     switch (eUrl)
     {
         case urlSendEmail:
-            url = @"/Android/AND_JUMMUM/sendEmail.php";
+            url = @"/android/AND_JUMMUM/sendEmail.php";
             break;
         case urlUploadPhoto:
-            url = @"/Android/AND_JUMMUM/uploadPhoto.php";
+            url = @"/android/AND_JUMMUM/uploadPhoto.php";
             break;
         case urlDownloadPhoto:
-            url = @"/Android/AND_JUMMUM/downloadImage.php";
+            url = @"/android/AND_JUMMUM/downloadImage.php";
             break;
         case urlDownloadFile:
-            url = @"/Android/AND_JUMMUM/downloadFile.php";
+            url = @"/android/AND_JUMMUM/downloadFile.php";
             break;
         case urlUserAccountDeviceTokenUpdate:
-            url = @"/Android/AND_JUMMUM/FFDUserAccountDeviceTokenUpdate.php";
+            url = @"/android/AND_JUMMUM/FFDUserAccountDeviceTokenUpdate.php";
             break;
         case urlPushSyncSync:
-            url = @"/Android/AND_JUMMUM/JMMPushSyncSync.php";
+            url = @"/android/AND_JUMMUM/JMMPushSyncSync.php";
             break;
         case urlPushSyncUpdateByDeviceToken:
-            url = @"/Android/AND_JUMMUM/JMMPushSyncUpdateByDeviceToken.php";
+            url = @"/android/AND_JUMMUM/JMMPushSyncUpdateByDeviceToken.php";
             break;
         case urlDeviceInsert:
-            url = @"/Android/AND_JUMMUM/FFDDeviceInsert.php";
+            url = @"/android/AND_JUMMUM/FFDDeviceInsert.php";
             break;
         case urlPushSyncUpdateTimeSynced:
-            url = @"/Android/AND_JUMMUM/JMMPushSyncUpdateTimeSynced.php";
+            url = @"/android/AND_JUMMUM/JMMPushSyncUpdateTimeSynced.php";
             break;
         case urlMasterGet:
-            url = @"/Android/AND_JUMMUM/JMMMasterGet.php";
+            url = @"/android/AND_JUMMUM/JMMMasterGet.php";
             break;
         case urlLogInInsert:
-            url = @"/Android/AND_JUMMUM/JMMLogInInsert.php";
+            url = @"/android/AND_JUMMUM/JMMLogInInsert.php";
             break;
         case urlLogInUserAccountInsert:
-            url = @"/Android/AND_JUMMUM/JMMLogInUserAccountInsert.php";
+            url = @"/android/AND_JUMMUM/JMMLogInUserAccountInsert.php";
             break;
         case urlLogOutInsert:
-            url = @"/Android/AND_JUMMUM/JMMLogOutInsert.php";
+            url = @"/android/AND_JUMMUM/JMMLogOutInsert.php";
             break;
         case urlWriteLog:
-            url = @"/Android/AND_JUMMUM/JMMWriteLog.php";
+            url = @"/android/AND_JUMMUM/JMMWriteLog.php";
             break;
         case urlMenuInsert:
-            url = @"/Android/AND_JUMMUM/JMMMenuInsert.php";
+            url = @"/android/AND_JUMMUM/JMMMenuInsert.php";
             break;
         case urlMenuUpdate:
-            url = @"/Android/AND_JUMMUM/JMMMenuUpdate.php";
+            url = @"/android/AND_JUMMUM/JMMMenuUpdate.php";
             break;
         case urlMenuDelete:
-            url = @"/Android/AND_JUMMUM/JMMMenuDelete.php";
+            url = @"/android/AND_JUMMUM/JMMMenuDelete.php";
             break;
         case urlMenuInsertList:
-            url = @"/Android/AND_JUMMUM/JMMMenuInsertList.php";
+            url = @"/android/AND_JUMMUM/JMMMenuInsertList.php";
             break;
         case urlMenuUpdateList:
-            url = @"/Android/AND_JUMMUM/JMMMenuUpdateList.php";
+            url = @"/android/AND_JUMMUM/JMMMenuUpdateList.php";
             break;
         case urlMenuDeleteList:
-            url = @"/Android/AND_JUMMUM/JMMMenuDeleteList.php";
+            url = @"/android/AND_JUMMUM/JMMMenuDeleteList.php";
             break;
         case urlMenuGetList:
-            url = @"/Android/AND_JUMMUM/JMMMenuGetList.php";
+            url = @"/android/AND_JUMMUM/JMMMenuGetList.php";
             break;
         case urlMenuNoteGetList:
-            url = @"/Android/AND_JUMMUM/JMMMenuNoteGetList.php";
+            url = @"/android/AND_JUMMUM/JMMMenuNoteGetList.php";
             break;
         case urlPicInsert:
-            url = @"/Android/AND_JUMMUM/JMMPicInsert.php";
+            url = @"/android/AND_JUMMUM/JMMPicInsert.php";
             break;
         case urlPicUpdate:
-            url = @"/Android/AND_JUMMUM/JMMPicUpdate.php";
+            url = @"/android/AND_JUMMUM/JMMPicUpdate.php";
             break;
         case urlPicDelete:
-            url = @"/Android/AND_JUMMUM/JMMPicDelete.php";
+            url = @"/android/AND_JUMMUM/JMMPicDelete.php";
             break;
         case urlPicInsertList:
-            url = @"/Android/AND_JUMMUM/JMMPicInsertList.php";
+            url = @"/android/AND_JUMMUM/JMMPicInsertList.php";
             break;
         case urlPicUpdateList:
-            url = @"/Android/AND_JUMMUM/JMMPicUpdateList.php";
+            url = @"/android/AND_JUMMUM/JMMPicUpdateList.php";
             break;
         case urlPicDeleteList:
-            url = @"/Android/AND_JUMMUM/JMMPicDeleteList.php";
+            url = @"/android/AND_JUMMUM/JMMPicDeleteList.php";
             break;
         case urlMenuPicInsert:
-            url = @"/Android/AND_JUMMUM/JMMMenuPicInsert.php";
+            url = @"/android/AND_JUMMUM/JMMMenuPicInsert.php";
             break;
         case urlMenuPicUpdate:
-            url = @"/Android/AND_JUMMUM/JMMMenuPicUpdate.php";
+            url = @"/android/AND_JUMMUM/JMMMenuPicUpdate.php";
             break;
         case urlMenuPicDelete:
-            url = @"/Android/AND_JUMMUM/JMMMenuPicDelete.php";
+            url = @"/android/AND_JUMMUM/JMMMenuPicDelete.php";
             break;
         case urlMenuPicInsertList:
-            url = @"/Android/AND_JUMMUM/JMMMenuPicInsertList.php";
+            url = @"/android/AND_JUMMUM/JMMMenuPicInsertList.php";
             break;
         case urlMenuPicUpdateList:
-            url = @"/Android/AND_JUMMUM/JMMMenuPicUpdateList.php";
+            url = @"/android/AND_JUMMUM/JMMMenuPicUpdateList.php";
             break;
         case urlMenuPicDeleteList:
-            url = @"/Android/AND_JUMMUM/JMMMenuPicDeleteList.php";
+            url = @"/android/AND_JUMMUM/JMMMenuPicDeleteList.php";
             break;
         case urlOmiseCheckOut:
-            url = @"/Android/AND_JUMMUM/OmiseCheckOut.php";
+            url = @"/android/AND_JUMMUM/OmiseCheckOut.php";
             break;
         case urlReceiptOrderTakingOrderNoteInsert:
-            url = @"/Android/AND_JUMMUM/JMMReceiptOrderTakingOrderNoteInsert.php";
+            url = @"/android/AND_JUMMUM/JMMReceiptOrderTakingOrderNoteInsert.php";
             break;
         case urlCustomerTableGetList:
-            url = @"/Android/AND_JUMMUM/JMMCustomerTableGetList.php";
+            url = @"/android/AND_JUMMUM/JMMCustomerTableGetList.php";
             break;
         case urlReceiptSummaryGetList:
-            url = @"/Android/AND_JUMMUM/JMMReceiptSummaryGetList.php";
+            url = @"/android/AND_JUMMUM/JMMReceiptSummaryGetList.php";
             break;
         case urlPromotionGetList:
-            url = @"/Android/AND_JUMMUM/JMMPromotionGetList.php";
+            url = @"/android/AND_JUMMUM/JMMPromotionGetList.php";
             break;
         case urlFacebookComment:
-            url = @"/Android/AND_JUMMUM/FacebookCommentInsertList.php";
+            url = @"/android/AND_JUMMUM/FacebookCommentInsertList.php";
             break;
         case urlUserAccountValidate:
-            url = @"/Android/AND_JUMMUM/JMMUserAccountValidate.php";
+            url = @"/android/AND_JUMMUM/JMMUserAccountValidate.php";
             break;
         case urlUserAccountGet:
-            url = @"/Android/AND_JUMMUM/JMMUserAccountGet.php";
+            url = @"/android/AND_JUMMUM/JMMUserAccountGet.php";
             break;
         case urlUserAccountInsert:
-            url = @"/Android/AND_JUMMUM/JMMUserAccountInsert.php";
+            url = @"/android/AND_JUMMUM/JMMUserAccountInsert.php";
             break;
         case urlUserAccountUpdate:
-            url = @"/Android/AND_JUMMUM/JMMUserAccountUpdate.php";
+            url = @"/android/AND_JUMMUM/JMMUserAccountUpdate.php";
             break;
         case urlTermsOfService:
-            url = @"/Android/AND_JUMMUM/HtmlTermsOfService.php";
+            url = @"/android/AND_JUMMUM/HtmlTermsOfService.php";
             break;
         case urlContactUs:
-            url = @"/Android/AND_JUMMUM/HtmlContactUs.php";
+            url = @"/android/AND_JUMMUM/HtmlContactUs.php";
             break;
         case urlUserAccountForgotPasswordInsert:
-            url = @"/Android/AND_JUMMUM/JMMUserAccountForgotPasswordInsert.php";
+            url = @"/android/AND_JUMMUM/JMMUserAccountForgotPasswordInsert.php";
             break;
         case urlRewardPointInsert:
-            url = @"/Android/AND_JUMMUM/JMMRewardPointInsert.php";
+            url = @"/android/AND_JUMMUM/JMMRewardPointInsert.php";
             break;
         case urlRewardPointUpdate:
-            url = @"/Android/AND_JUMMUM/JMMRewardPointUpdate.php";
+            url = @"/android/AND_JUMMUM/JMMRewardPointUpdate.php";
             break;
         case urlRewardPointDelete:
-            url = @"/Android/AND_JUMMUM/JMMRewardPointDelete.php";
+            url = @"/android/AND_JUMMUM/JMMRewardPointDelete.php";
             break;
         case urlRewardPointInsertList:
-            url = @"/Android/AND_JUMMUM/JMMRewardPointInsertList.php";
+            url = @"/android/AND_JUMMUM/JMMRewardPointInsertList.php";
             break;
         case urlRewardPointUpdateList:
-            url = @"/Android/AND_JUMMUM/JMMRewardPointUpdateList.php";
+            url = @"/android/AND_JUMMUM/JMMRewardPointUpdateList.php";
             break;
         case urlRewardPointDeleteList:
-            url = @"/Android/AND_JUMMUM/JMMRewardPointDeleteList.php";
+            url = @"/android/AND_JUMMUM/JMMRewardPointDeleteList.php";
             break;
         case urlRewardPointGet:
-            url = @"/Android/AND_JUMMUM/JMMRewardPointGet.php";
+            url = @"/android/AND_JUMMUM/JMMRewardPointGet.php";
             break;
         case urlPrivacyPolicy:
-            url = @"/Android/AND_JUMMUM/HtmlPrivacyPolicy.php";
+            url = @"/android/AND_JUMMUM/HtmlPrivacyPolicy.php";
             break;
         case urlPushReminder:
-            url = @"/Android/AND_JUMMUM/JMMPushReminder.php";
+            url = @"/android/AND_JUMMUM/JMMPushReminder.php";
             break;
         case urlHotDealInsert:
-            url = @"/Android/AND_JUMMUM/JMMHotDealInsert.php";
+            url = @"/android/AND_JUMMUM/JMMHotDealInsert.php";
             break;
         case urlHotDealUpdate:
-            url = @"/Android/AND_JUMMUM/JMMHotDealUpdate.php";
+            url = @"/android/AND_JUMMUM/JMMHotDealUpdate.php";
             break;
         case urlHotDealDelete:
-            url = @"/Android/AND_JUMMUM/JMMHotDealDelete.php";
+            url = @"/android/AND_JUMMUM/JMMHotDealDelete.php";
             break;
         case urlHotDealInsertList:
-            url = @"/Android/AND_JUMMUM/JMMHotDealInsertList.php";
+            url = @"/android/AND_JUMMUM/JMMHotDealInsertList.php";
             break;
         case urlHotDealUpdateList:
-            url = @"/Android/AND_JUMMUM/JMMHotDealUpdateList.php";
+            url = @"/android/AND_JUMMUM/JMMHotDealUpdateList.php";
             break;
         case urlHotDealDeleteList:
-            url = @"/Android/AND_JUMMUM/JMMHotDealDeleteList.php";
+            url = @"/android/AND_JUMMUM/JMMHotDealDeleteList.php";
             break;
         case urlHotDealGetList:
-            url = @"/Android/AND_JUMMUM/JMMHotDealGetList.php";
+            url = @"/android/AND_JUMMUM/JMMHotDealGetList.php";
             break;
         case urlRewardRedemptionInsert:
-            url = @"/Android/AND_JUMMUM/JMMRewardRedemptionInsert.php";
+            url = @"/android/AND_JUMMUM/JMMRewardRedemptionInsert.php";
             break;
         case urlRewardRedemptionUpdate:
-            url = @"/Android/AND_JUMMUM/JMMRewardRedemptionUpdate.php";
+            url = @"/android/AND_JUMMUM/JMMRewardRedemptionUpdate.php";
             break;
         case urlRewardRedemptionDelete:
-            url = @"/Android/AND_JUMMUM/JMMRewardRedemptionDelete.php";
+            url = @"/android/AND_JUMMUM/JMMRewardRedemptionDelete.php";
             break;
         case urlRewardRedemptionInsertList:
-            url = @"/Android/AND_JUMMUM/JMMRewardRedemptionInsertList.php";
+            url = @"/android/AND_JUMMUM/JMMRewardRedemptionInsertList.php";
             break;
         case urlRewardRedemptionUpdateList:
-            url = @"/Android/AND_JUMMUM/JMMRewardRedemptionUpdateList.php";
+            url = @"/android/AND_JUMMUM/JMMRewardRedemptionUpdateList.php";
             break;
         case urlRewardRedemptionDeleteList:
-            url = @"/Android/AND_JUMMUM/JMMRewardRedemptionDeleteList.php";
+            url = @"/android/AND_JUMMUM/JMMRewardRedemptionDeleteList.php";
             break;
         case urlPromoCodeInsert:
-            url = @"/Android/AND_JUMMUM/JMMPromoCodeInsert.php";
+            url = @"/android/AND_JUMMUM/JMMPromoCodeInsert.php";
             break;
         case urlPromoCodeUpdate:
-            url = @"/Android/AND_JUMMUM/JMMPromoCodeUpdate.php";
+            url = @"/android/AND_JUMMUM/JMMPromoCodeUpdate.php";
             break;
         case urlPromoCodeDelete:
-            url = @"/Android/AND_JUMMUM/JMMPromoCodeDelete.php";
+            url = @"/android/AND_JUMMUM/JMMPromoCodeDelete.php";
             break;
         case urlPromoCodeInsertList:
-            url = @"/Android/AND_JUMMUM/JMMPromoCodeInsertList.php";
+            url = @"/android/AND_JUMMUM/JMMPromoCodeInsertList.php";
             break;
         case urlPromoCodeUpdateList:
-            url = @"/Android/AND_JUMMUM/JMMPromoCodeUpdateList.php";
+            url = @"/android/AND_JUMMUM/JMMPromoCodeUpdateList.php";
             break;
         case urlPromoCodeDeleteList:
-            url = @"/Android/AND_JUMMUM/JMMPromoCodeDeleteList.php";
+            url = @"/android/AND_JUMMUM/JMMPromoCodeDeleteList.php";
             break;
         case urlRewardPointSpentGetList:
-            url = @"/Android/AND_JUMMUM/JMMRewardPointSpentGetList.php";
+            url = @"/android/AND_JUMMUM/JMMRewardPointSpentGetList.php";
             break;
         case urlRewardPointSpentMoreGetList:
-            url = @"/Android/AND_JUMMUM/JMMRewardPointSpentMoreGetList.php";
+            url = @"/android/AND_JUMMUM/JMMRewardPointSpentMoreGetList.php";
             break;
         case urlRewardPointSpentUsedGetList:
-            url = @"/Android/AND_JUMMUM/JMMRewardPointSpentUsedGetList.php";
+            url = @"/android/AND_JUMMUM/JMMRewardPointSpentUsedGetList.php";
             break;
         case urlRewardPointSpentUsedMoreGetList:
-            url = @"/Android/AND_JUMMUM/JMMRewardPointSpentUsedMoreGetList.php";
+            url = @"/android/AND_JUMMUM/JMMRewardPointSpentUsedMoreGetList.php";
             break;
         case urlRewardPointSpentExpiredGetList:
-            url = @"/Android/AND_JUMMUM/JMMRewardPointSpentExpiredGetList.php";
+            url = @"/android/AND_JUMMUM/JMMRewardPointSpentExpiredGetList.php";
             break;
         case urlRewardPointSpentExpiredMoreGetList:
-            url = @"/Android/AND_JUMMUM/JMMRewardPointSpentExpiredMoreGetList.php";
+            url = @"/android/AND_JUMMUM/JMMRewardPointSpentExpiredMoreGetList.php";
             break;
         case urlUserRewardRedemptionUsedInsert:
-            url = @"/Android/AND_JUMMUM/JMMUserRewardRedemptionUsedInsert.php";
+            url = @"/android/AND_JUMMUM/JMMUserRewardRedemptionUsedInsert.php";
             break;
         case urlUserRewardRedemptionUsedUpdate:
-            url = @"/Android/AND_JUMMUM/JMMUserRewardRedemptionUsedUpdate.php";
+            url = @"/android/AND_JUMMUM/JMMUserRewardRedemptionUsedUpdate.php";
             break;
         case urlUserRewardRedemptionUsedDelete:
-            url = @"/Android/AND_JUMMUM/JMMUserRewardRedemptionUsedDelete.php";
+            url = @"/android/AND_JUMMUM/JMMUserRewardRedemptionUsedDelete.php";
             break;
         case urlUserRewardRedemptionUsedInsertList:
-            url = @"/Android/AND_JUMMUM/JMMUserRewardRedemptionUsedInsertList.php";
+            url = @"/android/AND_JUMMUM/JMMUserRewardRedemptionUsedInsertList.php";
             break;
         case urlUserRewardRedemptionUsedUpdateList:
-            url = @"/Android/AND_JUMMUM/JMMUserRewardRedemptionUsedUpdateList.php";
+            url = @"/android/AND_JUMMUM/JMMUserRewardRedemptionUsedUpdateList.php";
             break;
         case urlUserRewardRedemptionUsedDeleteList:
-            url = @"/Android/AND_JUMMUM/JMMUserRewardRedemptionUsedDeleteList.php";
+            url = @"/android/AND_JUMMUM/JMMUserRewardRedemptionUsedDeleteList.php";
             break;
         case urlReceiptMaxModifiedDateGetList:
-            url = @"/Android/AND_JUMMUM/JMMReceiptMaxModifiedDateGetList.php";
+            url = @"/android/AND_JUMMUM/JMMReceiptMaxModifiedDateGetList.php";
             break;
         case urlReceiptWithModifiedDateGet:
-            url = @"/Android/AND_JUMMUM/JMMReceiptWithModifiedDateGet.php";
+            url = @"/android/AND_JUMMUM/JMMReceiptWithModifiedDateGet.php";
             break;
         case urlReceiptGet:
-            url = @"/Android/AND_JUMMUM/JMMReceiptGet.php";
+            url = @"/android/AND_JUMMUM/JMMReceiptGet.php";
             break;
         case urlDisputeReasonInsert:
-            url = @"/Android/AND_JUMMUM/JMMDisputeReasonInsert.php";
+            url = @"/android/AND_JUMMUM/JMMDisputeReasonInsert.php";
             break;
         case urlDisputeReasonUpdate:
-            url = @"/Android/AND_JUMMUM/JMMDisputeReasonUpdate.php";
+            url = @"/android/AND_JUMMUM/JMMDisputeReasonUpdate.php";
             break;
         case urlDisputeReasonDelete:
-            url = @"/Android/AND_JUMMUM/JMMDisputeReasonDelete.php";
+            url = @"/android/AND_JUMMUM/JMMDisputeReasonDelete.php";
             break;
         case urlDisputeReasonInsertList:
-            url = @"/Android/AND_JUMMUM/JMMDisputeReasonInsertList.php";
+            url = @"/android/AND_JUMMUM/JMMDisputeReasonInsertList.php";
             break;
         case urlDisputeReasonUpdateList:
-            url = @"/Android/AND_JUMMUM/JMMDisputeReasonUpdateList.php";
+            url = @"/android/AND_JUMMUM/JMMDisputeReasonUpdateList.php";
             break;
         case urlDisputeReasonDeleteList:
-            url = @"/Android/AND_JUMMUM/JMMDisputeReasonDeleteList.php";
+            url = @"/android/AND_JUMMUM/JMMDisputeReasonDeleteList.php";
             break;
         case urlDisputeReasonGetList:
-            url = @"/Android/AND_JUMMUM/JMMDisputeReasonGetList.php";
+            url = @"/android/AND_JUMMUM/JMMDisputeReasonGetList.php";
             break;
         case urlDisputeInsert:
-            url = @"/Android/AND_JUMMUM/JMMDisputeInsert.php";
+            url = @"/android/AND_JUMMUM/JMMDisputeInsert.php";
             break;
         case urlDisputeUpdate:
-            url = @"/Android/AND_JUMMUM/JMMDisputeUpdate.php";
+            url = @"/android/AND_JUMMUM/JMMDisputeUpdate.php";
             break;
         case urlDisputeDelete:
-            url = @"/Android/AND_JUMMUM/JMMDisputeDelete.php";
+            url = @"/android/AND_JUMMUM/JMMDisputeDelete.php";
             break;
         case urlDisputeInsertList:
-            url = @"/Android/AND_JUMMUM/JMMDisputeInsertList.php";
+            url = @"/android/AND_JUMMUM/JMMDisputeInsertList.php";
             break;
         case urlDisputeUpdateList:
-            url = @"/Android/AND_JUMMUM/JMMDisputeUpdateList.php";
+            url = @"/android/AND_JUMMUM/JMMDisputeUpdateList.php";
             break;
         case urlDisputeDeleteList:
-            url = @"/Android/AND_JUMMUM/JMMDisputeDeleteList.php";
+            url = @"/android/AND_JUMMUM/JMMDisputeDeleteList.php";
             break;
         case urlDisputeGetList:
-            url = @"/Android/AND_JUMMUM/JMMDisputeGetList.php";
+            url = @"/android/AND_JUMMUM/JMMDisputeGetList.php";
             break;
         case urlDisputeCancelInsert:
-            url = @"/Android/AND_JUMMUM/JMMDisputeCancelInsert.php";
+            url = @"/android/AND_JUMMUM/JMMDisputeCancelInsert.php";
             break;
         case urlReceiptUpdate:
-            url = @"/Android/AND_JUMMUM/JMMReceiptUpdate.php";
+            url = @"/android/AND_JUMMUM/JMMReceiptUpdate.php";
             break;
         case urlBranchGetList:
-            url = @"/Android/AND_JUMMUM/JMMBranchGetList.php";
+            url = @"/android/AND_JUMMUM/JMMBranchGetList.php";
             break;
         case urlBranchAndCustomerTableGet:
-            url = @"/Android/AND_JUMMUM/JMMBranchAndCustomerTableGet.php";
+            url = @"/android/AND_JUMMUM/JMMBranchAndCustomerTableGet.php";
+            break;
+        case urlBranchAndCustomerTableQRGet:
+            url = @"/android/AND_JUMMUM/JMMBranchAndCustomerTableQRGet.php";
             break;
         case urlBranchSearchGetList:
-            url = @"/Android/AND_JUMMUM/JMMBranchSearchGetList.php";
+            url = @"/android/AND_JUMMUM/JMMBranchSearchGetList.php";
             break;
         case urlBranchSearchMoreGetList:
-            url = @"/Android/AND_JUMMUM/JMMBranchSearchMoreGetList.php";
+            url = @"/android/AND_JUMMUM/JMMBranchSearchMoreGetList.php";
             break;
         case urlHotDealWithBranchGetList:
-            url = @"/Android/AND_JUMMUM/JMMHotDealWithBranchIDGetList.php";
+            url = @"/android/AND_JUMMUM/JMMHotDealWithBranchIDGetList.php";
             break;
         case urlRewardRedemptionWithBranchGetList:
-            url = @"/Android/AND_JUMMUM/JMMRewardRedemptionWithBranchIDGetList.php";
+            url = @"/android/AND_JUMMUM/JMMRewardRedemptionWithBranchIDGetList.php";
             break;
         case urlCommentInsert:
-            url = @"/Android/AND_JUMMUM/JMMCommentInsert.php";
+            url = @"/android/AND_JUMMUM/JMMCommentInsert.php";
             break;
         case urlCommentUpdate:
-            url = @"/Android/AND_JUMMUM/JMMCommentUpdate.php";
+            url = @"/android/AND_JUMMUM/JMMCommentUpdate.php";
             break;
         case urlCommentDelete:
-            url = @"/Android/AND_JUMMUM/JMMCommentDelete.php";
+            url = @"/android/AND_JUMMUM/JMMCommentDelete.php";
             break;
         case urlCommentInsertList:
-            url = @"/Android/AND_JUMMUM/JMMCommentInsertList.php";
+            url = @"/android/AND_JUMMUM/JMMCommentInsertList.php";
             break;
         case urlCommentUpdateList:
-            url = @"/Android/AND_JUMMUM/JMMCommentUpdateList.php";
+            url = @"/android/AND_JUMMUM/JMMCommentUpdateList.php";
             break;
         case urlCommentDeleteList:
-            url = @"/Android/AND_JUMMUM/JMMCommentDeleteList.php";
+            url = @"/android/AND_JUMMUM/JMMCommentDeleteList.php";
             break;
         case urlRecommendShopInsert:
-            url = @"/Android/AND_JUMMUM/JMMRecommendShopInsert.php";
+            url = @"/android/AND_JUMMUM/JMMRecommendShopInsert.php";
             break;
         case urlRecommendShopUpdate:
-            url = @"/Android/AND_JUMMUM/JMMRecommendShopUpdate.php";
+            url = @"/android/AND_JUMMUM/JMMRecommendShopUpdate.php";
             break;
         case urlRecommendShopDelete:
-            url = @"/Android/AND_JUMMUM/JMMRecommendShopDelete.php";
+            url = @"/android/AND_JUMMUM/JMMRecommendShopDelete.php";
             break;
         case urlRecommendShopInsertList:
-            url = @"/Android/AND_JUMMUM/JMMRecommendShopInsertList.php";
+            url = @"/android/AND_JUMMUM/JMMRecommendShopInsertList.php";
             break;
         case urlRecommendShopUpdateList:
-            url = @"/Android/AND_JUMMUM/JMMRecommendShopUpdateList.php";
+            url = @"/android/AND_JUMMUM/JMMRecommendShopUpdateList.php";
             break;
         case urlRecommendShopDeleteList:
-            url = @"/Android/AND_JUMMUM/JMMRecommendShopDeleteList.php";
+            url = @"/android/AND_JUMMUM/JMMRecommendShopDeleteList.php";
             break;
         case urlRatingInsert:
-            url = @"/Android/AND_JUMMUM/JMMRatingInsert.php";
+            url = @"/android/AND_JUMMUM/JMMRatingInsert.php";
             break;
         case urlRatingUpdate:
-            url = @"/Android/AND_JUMMUM/JMMRatingUpdate.php";
+            url = @"/android/AND_JUMMUM/JMMRatingUpdate.php";
             break;
         case urlRatingDelete:
-            url = @"/Android/AND_JUMMUM/JMMRatingDelete.php";
+            url = @"/android/AND_JUMMUM/JMMRatingDelete.php";
             break;
         case urlRatingInsertList:
-            url = @"/Android/AND_JUMMUM/JMMRatingInsertList.php";
+            url = @"/android/AND_JUMMUM/JMMRatingInsertList.php";
             break;
         case urlRatingUpdateList:
-            url = @"/Android/AND_JUMMUM/JMMRatingUpdateList.php";
+            url = @"/android/AND_JUMMUM/JMMRatingUpdateList.php";
             break;
         case urlRatingDeleteList:
-            url = @"/Android/AND_JUMMUM/JMMRatingDeleteList.php";
+            url = @"/android/AND_JUMMUM/JMMRatingDeleteList.php";
             break;
         case urlReceiptDisputeRatingGet:
-            url = @"/Android/AND_JUMMUM/JMMReceiptDisputeRatingGet.php";
+            url = @"/android/AND_JUMMUM/JMMReceiptDisputeRatingGet.php";
             break;
         case urlReceiptDisputeRatingAllAfterReceiptGet:
-            url = @"/Android/AND_JUMMUM/JMMReceiptDisputeRatingAllAfterReceiptGet.php";
+            url = @"/android/AND_JUMMUM/JMMReceiptDisputeRatingAllAfterReceiptGet.php";
             break;
         case urlOpeningTimeGet:
-            url = @"/Android/AND_JUMMUM/JMMOpeningTimeGet.php";
+            url = @"/android/AND_JUMMUM/JMMOpeningTimeGet.php";
             break;
         default:
             break;
@@ -932,19 +935,22 @@ extern NSString *globalModifiedUser;
     else if([text length] > 10)
     {
         NSString *strPhoneNo = @"";
-        NSArray *arrPhoneNo = [text componentsSeparatedByString:@","];
-        for(int i=0; i<[arrPhoneNo count]; i++)
+        if([text rangeOfString:@","].location != NSNotFound)
         {
-            if(i==0)
+            NSArray *arrPhoneNo = [text componentsSeparatedByString:@","];
+            for(int i=0; i<[arrPhoneNo count]; i++)
             {
-                strPhoneNo = [self setPhoneNoFormat:arrPhoneNo[i]];
+                if(i==0)
+                {
+                    strPhoneNo = [self setPhoneNoFormat:arrPhoneNo[i]];
+                }
+                else
+                {
+                    strPhoneNo = [NSString stringWithFormat:@"%@,%@",strPhoneNo,[self setPhoneNoFormat:arrPhoneNo[i]]];
+                }
             }
-            else
-            {
-                strPhoneNo = [NSString stringWithFormat:@"%@,%@",strPhoneNo,[self setPhoneNoFormat:arrPhoneNo[i]]];
-            }
+            return strPhoneNo;
         }
-        return strPhoneNo;
     }
     return text;
 }
@@ -1865,6 +1871,24 @@ extern NSString *globalModifiedUser;
     NSString *cachedFolderPath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0];
     NSString *cachedImagePath = [cachedFolderPath stringByAppendingPathComponent:saveImageName];
     [UIImagePNGRepresentation(image) writeToFile:cachedImagePath atomically:YES];
+}
+
++(NSString *)formatPhoneNo:(NSString *)phoneNo
+{
+    NSString *formatPhoneNo = @"";
+//    NSString *phoneNo = @"0813072993";
+    for(int i=0; i<[phoneNo length]; i++)
+    {
+        NSRange needleRange = NSMakeRange(i,1);
+        NSString *eachDigit = [phoneNo substringWithRange:needleRange];
+        if(i == 3 || i == 6)
+        {
+            formatPhoneNo = [NSString stringWithFormat:@"%@-",formatPhoneNo];
+        }
+        formatPhoneNo = [NSString stringWithFormat:@"%@%@",formatPhoneNo,eachDigit];
+    }
+    
+    return formatPhoneNo;
 }
 @end
 

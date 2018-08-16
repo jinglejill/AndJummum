@@ -23,6 +23,7 @@
 #import "Promotion.h"
 #import "MenuType.h"
 #import "MenuNote.h"
+#import "CreditCard.h"
 
 
 #import "Utility.h"
@@ -653,6 +654,7 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
                                                       style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action)
                               {
                                   [OrderTaking removeCurrentOrderTakingList];
+                                  [CreditCard removeCurrentCreditCard];
                                   [tbvOrder reloadData];
                                   [tbvTotal reloadData];
                               }];

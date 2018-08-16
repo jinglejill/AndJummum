@@ -171,6 +171,7 @@ enum enumDB
     dbReceiptWithModifiedDate,
     dbBranch,
     dbBranchAndCustomerTable,
+    dbBranchAndCustomerTableQR,
     dbBranchSearch,
     dbBranchSearchMore,
     dbComment,
@@ -302,6 +303,7 @@ enum enumUrl
     urlDisputeCancelInsert,
     urlBranchGetList,
     urlBranchAndCustomerTableGet,
+    urlBranchAndCustomerTableQRGet,
     urlBranchSearchGetList,
     urlBranchSearchMoreGetList,
     urlCommentInsert,
@@ -454,5 +456,6 @@ enum enumUrl
 +(BOOL)updateDataList:(NSArray *)itemList dataList:(NSMutableArray *)dataList;
 +(UIImage *)getImageFromCache:(NSString *)imageName;
 +(void)saveImageInCache:(UIImage *)image imageName:(NSString *)imageName;
++(NSString *)formatPhoneNo:(NSString *)phoneNo;
 @end
 

@@ -93,6 +93,8 @@ void myExceptionHandler(NSException *exception)
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     
+//    NSString *key = [NSString stringWithFormat:@"dismiss verion:%@",@"1.4.4"];
+//    [[NSUserDefaults standardUserDefaults] setValue:@0 forKey:key];
     
     UIBarButtonItem *barButtonAppearance = [UIBarButtonItem appearance];
     [barButtonAppearance setBackgroundImage:[self imageWithColor:[UIColor clearColor]] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault]; // Change to your colour
@@ -134,7 +136,7 @@ void myExceptionHandler(NSException *exception)
     }
     
     
-    [[NSUserDefaults standardUserDefaults] setValue:@"AND_JUMMUM" forKey:BRANCH];
+//    [[NSUserDefaults standardUserDefaults] setValue:@"AND_JUMMUM" forKey:BRANCH];
     
     
     

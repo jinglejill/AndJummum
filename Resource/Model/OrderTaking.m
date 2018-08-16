@@ -396,13 +396,14 @@
     
     
     NSInteger countQuantity = 0;
+    NSInteger previousTakeAway = -1;
     NSInteger previousMenuID = -1;
     NSString *strPreviousNoteIDListInText = @"-";
     
     
     for(OrderTaking *item in sortArray)
     {
-        if(item.menuID != previousMenuID || ![item.noteIDListInText isEqualToString:strPreviousNoteIDListInText])
+        if(item.takeAway != previousTakeAway || item.menuID != previousMenuID || ![item.noteIDListInText isEqualToString:strPreviousNoteIDListInText])
         {
             if([newOrderTakingList count]>0)
             {
@@ -417,6 +418,7 @@
         {
             countQuantity++;
         }
+        previousTakeAway = item.takeAway;
         previousMenuID = item.menuID;
         strPreviousNoteIDListInText = item.noteIDListInText;
     }
