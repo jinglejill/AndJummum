@@ -1254,6 +1254,239 @@
     [dataTask resume];
 }
 
+- (void)insertItemsJson:(enum enumDB)currentDB withData:(NSObject *)data actionScreen:(NSString *)actionScreen
+{
+    propCurrentDBInsert = currentDB;
+    NSURL * url;
+    NSString *noteDataString;
+    NSData *jsonData;
+    switch (currentDB)
+    {
+        case dbOmiseCheckOut:
+        {
+            NSArray *dataList = (NSArray *)data;
+            NSString *omiseToken = dataList[0];
+            NSInteger amount = [dataList[1] integerValue];
+            Receipt *receipt = dataList[2];
+            NSMutableArray *orderTakingList = dataList[3];
+            NSMutableArray *orderNoteList = dataList[4];
+            NSObject *userPromotionOrRewardRedemptionUsed = dataList[5];
+            NSNumber *objPromoCodeID = dataList[6];
+            NSInteger type = [userPromotionOrRewardRedemptionUsed isMemberOfClass:[UserPromotionUsed class]]?1:2;
+            UserPromotionUsed *userPromotionUsed = [userPromotionOrRewardRedemptionUsed isMemberOfClass:[UserPromotionUsed class]]?(UserPromotionUsed *)userPromotionOrRewardRedemptionUsed:nil;
+            UserRewardRedemptionUsed *userRewardRedemptionUsed = [userPromotionOrRewardRedemptionUsed isMemberOfClass:[UserRewardRedemptionUsed class]]?(UserRewardRedemptionUsed *)userPromotionOrRewardRedemptionUsed:nil;
+            
+            
+            
+            NSDictionary *dicData = [receipt dictionary];
+            NSMutableArray *arrOrderTaking = [[NSMutableArray alloc]init];
+            for(int i=0; i<[orderTakingList count]; i++)
+            {
+                OrderTaking *orderTaking = orderTakingList[i];
+                NSDictionary *dicOrderTaking = [orderTaking dictionary];
+                [arrOrderTaking addObject:dicOrderTaking];
+            }
+            NSMutableArray *arrOrderNote = [[NSMutableArray alloc]init];
+            for(int i=0; i<[orderNoteList count]; i++)
+            {
+                OrderNote *orderNote = orderNoteList[i];
+                NSDictionary *dicOrderNote = [orderNote dictionary];
+                [arrOrderNote addObject:dicOrderNote];
+            }
+            NSDictionary *dicUserPromotionUsed = [userPromotionUsed dictionary];
+            NSDictionary *dicUserRewardRedemptionUsed = [userRewardRedemptionUsed dictionary];
+            NSMutableArray *mutDicData = [dicData mutableCopy];
+            [mutDicData setValue:omiseToken forKey:@"omiseToken"];
+            [mutDicData setValue:@(amount) forKey:@"amount"];
+            [mutDicData setValue:@(type) forKey:@"type"];
+            [mutDicData setValue:objPromoCodeID forKey:@"promoCodeID"];
+            [mutDicData setValue:arrOrderTaking forKey:@"orderTaking"];
+            [mutDicData setValue:arrOrderNote forKey:@"orderNote"];
+            [mutDicData setValue:dicUserPromotionUsed forKey:@"userPromotionUsed"];
+            [mutDicData setValue:dicUserRewardRedemptionUsed forKey:@"rewardRedemptionUsed"];
+            NSError *error;
+            jsonData = [NSJSONSerialization dataWithJSONObject:mutDicData options:0 error:&error];
+            
+            
+            
+            noteDataString = [NSString stringWithFormat:@"omiseToken=%@&amount=%ld&type=%ld&promoCodeID=%ld",omiseToken,(long)amount,type,[objPromoCodeID integerValue]];
+            noteDataString = [NSString stringWithFormat:@"%@&countOtOrderTaking=%ld&countOnOrderNote=%ld",noteDataString,(unsigned long)[orderTakingList count],[orderNoteList count]];
+            noteDataString = [NSString stringWithFormat:@"%@&%@",noteDataString,[Utility getNoteDataString:receipt]];
+            noteDataString = [NSString stringWithFormat:@"%@&%@",noteDataString,[Utility getNoteDataString:userPromotionOrRewardRedemptionUsed withPrefix:@"pr"]];
+            for(int i=0; i<[orderTakingList count]; i++)
+            {
+                OrderTaking *orderTaking = orderTakingList[i];
+                noteDataString = [NSString stringWithFormat:@"%@&%@",noteDataString,[Utility getNoteDataString:orderTaking withPrefix:@"ot" runningNo:i]];
+            }
+            for(int i=0; i<[orderNoteList count]; i++)
+            {
+                OrderNote *orderNote = orderNoteList[i];
+                noteDataString = [NSString stringWithFormat:@"%@&%@",noteDataString,[Utility getNoteDataString:orderNote withPrefix:@"on" runningNo:i]];
+            }
+            
+            
+            url = [NSURL URLWithString:[Utility url:urlOmiseCheckOut]];
+        }
+            break;
+        default:
+            break;
+    }
+    noteDataString = [NSString stringWithFormat:@"%@&modifiedDeviceToken=%@&modifiedUser=%@&actionScreen=%@",noteDataString,[Utility deviceToken],[Utility modifiedUser],actionScreen];
+    NSLog(@"url: %@",url);
+    NSLog(@"notedatastring: %@",noteDataString);
+    
+    
+    
+    NSURLSessionConfiguration *defaultConfigObject = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *defaultSession = [NSURLSession sessionWithConfiguration: defaultConfigObject delegate: nil delegateQueue: [NSOperationQueue mainQueue]];
+    
+    NSMutableURLRequest * urlRequest = [NSMutableURLRequest requestWithURL:url];
+    [urlRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [urlRequest setHTTPMethod:@"POST"];
+    [urlRequest setHTTPBody:jsonData];
+//    [urlRequest setHTTPBody:[noteDataString dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    
+    NSURLSessionDataTask * dataTask = [defaultSession dataTaskWithRequest:urlRequest completionHandler:^(NSData *dataRaw, NSURLResponse *header, NSError *error) {
+        
+        if(!error || (error && error.code == -1005))//-1005 คือ1. ตอน push notification ไม่ได้ และ2. ตอน enterbackground ตอน transaction ยังไม่เสร็จ พอ enter foreground มันจะไม่ return data มาให้
+        {
+            switch (propCurrentDB)
+            {
+                default:
+                {
+                    if(!dataRaw)
+                    {
+                        //data parameter is nil
+                        NSLog(@"Error: %@", [error debugDescription]);
+                        return ;
+                    }
+                    
+                    NSDictionary *json = [NSJSONSerialization
+                                          JSONObjectWithData:dataRaw
+                                          options:kNilOptions error:&error];
+                    NSString *status = json[@"status"];
+                    NSString *strReturnID = json[@"returnID"];
+                    NSArray *dataJson = json[@"dataJson"];
+                    NSString *strTableName = json[@"tableName"];
+                    //                    NSString *action = json[@"action"];
+                    if([status isEqual:@"1"])
+                    {
+                        NSLog(@"insert success");
+                        if(strReturnID)
+                        {
+                            if (self.delegate)
+                            {
+                                [self.delegate itemsInsertedWithReturnID:strReturnID];
+                            }
+                        }
+                        else if(strTableName)
+                        {
+                            NSArray *arrClassName;
+                            if([strTableName isEqualToString:@"UserAccountValidate"] || [strTableName isEqualToString:@"LogInUserAccount"])
+                            {
+                                if([dataJson count] == 1)
+                                {
+                                    arrClassName = @[@"UserAccount"];
+                                }
+                                else
+                                {
+                                    //                                    @[@"Message",@"Menu",@"MenuType",@"MenuNote",@"Note",@"NoteType",@"SubMenuType",@"SpecialPriceProgram"];
+                                    arrClassName = @[@"UserAccount",@"Receipt",@"Branch",@"OrderTaking",@"Menu",@"MenuType",@"OrderNote",@"Note",@"NoteType"];
+                                    //                                    arrClassName = @[@"UserAccount",@"Receipt",@"OrderTaking",@"Menu",@"OrderNote",@"Note",@"NoteType",@"MenuType",@"SubMenuType"];
+                                }
+                            }
+                            else if([strTableName isEqualToString:@"UserAccountForgotPassword"])
+                            {
+                                arrClassName = @[@"UserAccount"];
+                            }
+                            else if([strTableName isEqualToString:@"OmiseCheckOut"])
+                            {
+                                arrClassName = @[@"Receipt",@"OrderTaking",@"OrderNote"];
+                            }
+                            else if([strTableName isEqualToString:@"RewardPoint"])
+                            {
+                                arrClassName = @[@"PromoCode"];
+                            }
+                            else if([strTableName isEqualToString:@"Receipt"])
+                            {
+                                arrClassName = @[@"Receipt",@"Dispute"];
+                            }
+                            else if([strTableName isEqualToString:@"Rating"])
+                            {
+                                arrClassName = @[@"Rating"];
+                            }
+                            
+                            NSArray *items = [Utility jsonToArray:dataJson arrClassName:arrClassName];
+                            if(self.delegate)
+                            {
+                                [self.delegate itemsInsertedWithReturnData:items];
+                            }
+                        }
+                        else
+                        {
+                            if(self.delegate)
+                            {
+                                [self.delegate itemsInserted];
+                            }
+                        }
+                    }
+                    else if([status isEqual:@"2"])
+                    {
+                        //alertMsg
+                        if(self.delegate)
+                        {
+                            if(propCurrentDBInsert == dbOmiseCheckOut)
+                            {
+                                NSString *msg = json[@"msg"];
+                                NSMutableArray *dataList = [[NSMutableArray alloc]init];
+                                NSMutableArray *messgeList = [[NSMutableArray alloc]init];
+                                Message *message = [[Message alloc]init];
+                                message.text = msg;
+                                [messgeList addObject:message];
+                                [dataList addObject:messgeList];
+                                [self.delegate itemsInsertedWithReturnData:dataList];
+                                NSLog(@"msg: %@", msg);
+                            }
+                            else
+                            {
+                                NSString *msg = json[@"msg"];
+                                [self.delegate alertMsg:msg];
+                                NSLog(@"status: %@", status);
+                                NSLog(@"msg: %@", msg);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //Error
+                        NSLog(@"insert fail: %ld",currentDB);
+                        NSLog(@"%@", status);
+                        if (self.delegate)
+                        {
+                            [self.delegate itemsFail];
+                        }
+                    }
+                }
+                    break;
+            }
+        }
+        else
+        {
+            if (self.delegate)
+            {
+                [self.delegate itemsFail];
+                //                [self.delegate connectionFail];
+            }
+            
+            NSLog(@"Error: %@", [error debugDescription]);
+            NSLog(@"Error: %@", [error localizedDescription]);
+        }
+    }];
+    
+    [dataTask resume];
+}
+
 - (void)updateItems:(enum enumDB)currentDB withData:(NSObject *)data actionScreen:(NSString *)actionScreen
 {
     propCurrentDBUpdate = currentDB;
