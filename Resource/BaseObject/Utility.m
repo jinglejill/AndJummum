@@ -261,7 +261,7 @@ extern NSString *globalModifiedUser;
             url = @"/android/AND_JUMMUM/JMMMenuPicDeleteList.php";
             break;
         case urlOmiseCheckOut:
-            url = @"/android/AND_JUMMUM/AndOmiseCheckOut.php";
+            url = @"/android/AND_JUMMUM/OmiseCheckOut.php";
             break;
         case urlReceiptOrderTakingOrderNoteInsert:
             url = @"/android/AND_JUMMUM/JMMReceiptOrderTakingOrderNoteInsert.php";

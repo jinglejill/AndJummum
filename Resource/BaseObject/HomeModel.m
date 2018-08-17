@@ -1303,7 +1303,7 @@
             [mutDicData setValue:arrOrderTaking forKey:@"orderTaking"];
             [mutDicData setValue:arrOrderNote forKey:@"orderNote"];
             [mutDicData setValue:dicUserPromotionUsed forKey:@"userPromotionUsed"];
-            [mutDicData setValue:dicUserRewardRedemptionUsed forKey:@"rewardRedemptionUsed"];
+            [mutDicData setValue:dicUserRewardRedemptionUsed forKey:@"userRewardRedemptionUsed"];
             NSError *error;
             jsonData = [NSJSONSerialization dataWithJSONObject:mutDicData options:0 error:&error];
             
