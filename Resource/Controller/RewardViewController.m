@@ -76,14 +76,15 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
 {
     [super viewDidAppear:animated];
     
-    
-    UserAccount *userAccount = [UserAccount getCurrentUserAccount];
-    self.homeModel = [[HomeModel alloc]init];
-    self.homeModel.delegate = self;
-    
-    //เพิ่งสั่งอาหารร้านนี้ไปครั้งแรก ในหน้านี้ก็จะ โหลดข้อมูล rewardRedemption จาก db ของร้านนี้มาแสดง
-    NSInteger branchID = [Receipt getBranchIDWithMaxModifiedDateWithMemberID:userAccount.userAccountID];
-    [self.homeModel downloadItems:dbRewardRedemptionWithBranchID withData:@[userAccount,@(branchID),@([_rewardRedemptionList count])]];
+    {
+        UserAccount *userAccount = [UserAccount getCurrentUserAccount];
+        self.homeModel = [[HomeModel alloc]init];
+        self.homeModel.delegate = self;
+        
+        //เพิ่งสั่งอาหารร้านนี้ไปครั้งแรก ในหน้านี้ก็จะ โหลดข้อมูล rewardRedemption จาก db ของร้านนี้มาแสดง
+        NSInteger branchID = [Receipt getBranchIDWithMaxModifiedDateWithMemberID:userAccount.userAccountID];
+        [self.homeModel downloadItems:dbRewardRedemptionWithBranchID withData:@[userAccount,@(branchID),@([_rewardRedemptionList count])]];
+    }    
 }
 
 - (void)viewDidLoad
@@ -92,7 +93,7 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
     // Do any additional setup after loading the view.
     
     
-    NSString *title = [Setting getValue:@"066t" example:@"แต้มสะสม/แลกของรางวัล"];
+    NSString *title = [Language getText:@"แต้มสะสม/แลกของรางวัล"];
     lblNavTitle.text = title;
     [self loadingOverlayView];
     UserAccount *userAccount = [UserAccount getCurrentUserAccount];
@@ -146,13 +147,12 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
     
     
     if(section == 0)
-    {
-        NSString *message = [Setting getValue:@"115m" example:@"ค้นหา Reward"];
+    {        
         CustomTableViewCellSearchBar *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifierSearchBar];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.sbText.delegate = self;
         cell.sbText.tag = 300;
-        cell.sbText.placeholder = message;
+        cell.sbText.placeholder = [Language getText:@"ค้นหา Reward"];
         [cell.sbText setInputAccessoryView:self.toolBar];
         UITextField *textField = [cell.sbText valueForKey:@"searchField"];
         textField.layer.borderColor = [cTextFieldBorder CGColor];
@@ -178,7 +178,7 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
 
-            cell.lblText.text = @"แต้มสะสม";
+            cell.lblText.text = [Language getText:@"แต้มสะสม"];
             cell.lblText.font = [UIFont fontWithName:@"Prompt-SemiBold" size:15.0f];
             NSInteger point = (int)floor(_rewardPoint.point);
             NSString *strPoint = [Utility formatDecimal:point];
@@ -199,7 +199,7 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
             
             
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            cell.textLabel.text = @"รางวัลของฉัน";
+            cell.textLabel.text = [Language getText:@"รางวัลของฉัน"];
             cell.textLabel.font = [UIFont fontWithName:@"Prompt-SemiBold" size:15.0f];
             cell.textLabel.textColor = cSystem4;
             
@@ -239,7 +239,6 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
          {
              if (succeeded)
              {
-                 NSLog(@"succeed");
                  cell.imgVwValue.image = image;
                  [self setImageDesign:cell.imgVwValue];
              }
@@ -342,7 +341,7 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
 {
     
     HomeModel *homeModel = (HomeModel *)objHomeModel;
-    if(homeModel.propCurrentDB == dbRewardPoint)
+    if(homeModel.propCurrentDB == dbRewardPoint || homeModel.propCurrentDB == dbRewardRedemptionWithBranchID)
     {
         [self removeOverlayViews];
         
@@ -358,7 +357,7 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
         
         //rewardRedemptionList
         NSMutableArray *rewardRedemptionList = items[1];
-        if([rewardRedemptionList count] == 0)
+        if([rewardRedemptionList count] == 0 && homeModel.propCurrentDB == dbRewardPoint)
         {
             _lastItemReached = YES;
             return;
@@ -367,36 +366,10 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
         {
             _rewardRedemptionList = [[NSMutableArray alloc]init];
         }
-        [_rewardRedemptionList addObjectsFromArray:rewardRedemptionList];
-        _rewardRedemptionList = [RewardRedemption sortWithdataList:_rewardRedemptionList];
+        [Utility updateSharedObject:items];
+        _rewardRedemptionList = [RewardRedemption getRewardRedemptionList];
         UISearchBar *sbText = [self.view viewWithTag:300];
         [self searchBar:sbText textDidChange:sbText.text];
-    }
-    else if(homeModel.propCurrentDB == dbRewardRedemptionWithBranchID)
-    {
-        //rewardPoint
-        NSMutableArray *rewardPointList = items[0];
-        _rewardPoint = rewardPointList[0];
-        NSRange range = NSMakeRange(1, 1);
-        NSIndexSet *section = [NSIndexSet indexSetWithIndexesInRange:range];
-        [tbvData reloadSections:section withRowAnimation:UITableViewRowAnimationNone];
-        
-        
-        
-        //rewardRedemptionList
-        //add update
-        NSMutableArray *rewardRedemptionList = items[1];
-        if(!_rewardRedemptionList)
-        {
-            _rewardRedemptionList = [[NSMutableArray alloc]init];
-        }
-        BOOL update = [Utility updateDataList:rewardRedemptionList dataList:_rewardRedemptionList];
-        _rewardRedemptionList = [RewardRedemption sortWithdataList:_rewardRedemptionList];
-        if(update)
-        {
-            UISearchBar *sbText = [self.view viewWithTag:300];
-            [self searchBar:sbText textDidChange:sbText.text];
-        }
     }
 }
 

@@ -31,7 +31,7 @@ static NSString * const reuseIdentifierLabelLabel = @"CustomTableViewCellLabelLa
 {
     [super viewDidLayoutSubviews];
     UIWindow *window = UIApplication.sharedApplication.keyWindow;
-
+    
     
     float topPadding = window.safeAreaInsets.top;
     topViewHeight.constant = topPadding == 0?20:topPadding;
@@ -43,7 +43,7 @@ static NSString * const reuseIdentifierLabelLabel = @"CustomTableViewCellLabelLa
     // Do any additional setup after loading the view.
     
     
-    NSString *title = [Setting getValue:@"063t" example:@"ข้อมูลส่วนตัว"];
+    NSString *title = [Language getText:@"ข้อมูลส่วนตัว"];
     lblNavTitle.text = title;
     tbvData.dataSource = self;
     tbvData.delegate = self;
@@ -70,7 +70,7 @@ static NSString * const reuseIdentifierLabelLabel = @"CustomTableViewCellLabelLa
     // Return the number of rows in the section.
     
     
-    return 4;
+    return 5;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -88,7 +88,7 @@ static NSString * const reuseIdentifierLabelLabel = @"CustomTableViewCellLabelLa
         case 0:
         {
             UserAccount *userAccount = [UserAccount getCurrentUserAccount];
-            cell.lblText.text = @"อีเมล";
+            cell.lblText.text = [Utility validateEmailWithString:userAccount.username]?[Language getText:@"อีเมล"]:[Language getText:@"อีเมล (FB)"];
             [cell.lblText sizeToFit];
             cell.lblTextWidthConstant.constant = cell.lblText.frame.size.width;
             cell.lblValue.text = userAccount.email;
@@ -97,25 +97,34 @@ static NSString * const reuseIdentifierLabelLabel = @"CustomTableViewCellLabelLa
         case 1:
         {
             UserAccount *userAccount = [UserAccount getCurrentUserAccount];
-            cell.lblText.text = @"ชื่อ";
+            cell.lblText.text = [Language getText:@"ชื่อ"];
             [cell.lblText sizeToFit];
             cell.lblTextWidthConstant.constant = cell.lblText.frame.size.width;
-            cell.lblValue.text = userAccount.fullName;
+            cell.lblValue.text = userAccount.firstName;
         }
             break;
         case 2:
         {
             UserAccount *userAccount = [UserAccount getCurrentUserAccount];
-            cell.lblText.text = @"วันเกิด";
+            cell.lblText.text = [Language getText:@"นามสกุล"];
             [cell.lblText sizeToFit];
             cell.lblTextWidthConstant.constant = cell.lblText.frame.size.width;
-            cell.lblValue.text = [Utility dateToString:userAccount.birthDate toFormat:@"d MMM yyyy"];
+            cell.lblValue.text = userAccount.lastName;
         }
             break;
         case 3:
         {
             UserAccount *userAccount = [UserAccount getCurrentUserAccount];
-            cell.lblText.text = @"เบอร์โทร.";
+            cell.lblText.text = [Language getText:@"วันเกิด"];
+            [cell.lblText sizeToFit];
+            cell.lblTextWidthConstant.constant = cell.lblText.frame.size.width;
+            cell.lblValue.text = [Utility dateToString:userAccount.birthDate toFormat:@"d MMM yyyy"];
+        }
+            break;
+        case 4:
+        {
+            UserAccount *userAccount = [UserAccount getCurrentUserAccount];
+            cell.lblText.text = [Language getText:@"เบอร์โทร."];
             [cell.lblText sizeToFit];
             cell.lblTextWidthConstant.constant = cell.lblText.frame.size.width;
             cell.lblValue.text = [Utility setPhoneNoFormat:userAccount.phoneNo];;

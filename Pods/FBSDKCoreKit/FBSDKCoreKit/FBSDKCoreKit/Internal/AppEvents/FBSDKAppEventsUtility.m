@@ -18,6 +18,8 @@
 
 #import "FBSDKAppEventsUtility.h"
 
+#import <objc/runtime.h>
+
 #import <AdSupport/AdSupport.h>
 
 #import "FBSDKAccessToken.h"
@@ -61,6 +63,11 @@
   }
 
   parameters[@"application_tracking_enabled"] = [@(!FBSDKSettings.limitEventAndDataUsage) stringValue];
+
+  NSString *userID = [FBSDKAppEvents userID];
+  if (userID) {
+    parameters[@"app_user_id"] = userID;
+  }
 
   [FBSDKAppEventsDeviceInfo extendDictionaryWithDeviceInfo:parameters];
 
@@ -207,30 +214,55 @@
   [[NSNotificationCenter defaultCenter] postNotificationName:FBSDKAppEventsLoggingResultNotification object:error];
 }
 
++ (BOOL)matchString:(NSString *)string
+  firstCharacterSet:(NSCharacterSet *)firstCharacterSet
+restOfStringCharacterSet:(NSCharacterSet *)restOfStringCharacterSet
+{
+  if (string.length == 0) {
+    return NO;
+  }
+  for (NSUInteger i = 0; i < string.length; i++) {
+    const unichar c = [string characterAtIndex:i];
+    if (i == 0) {
+      if (![firstCharacterSet characterIsMember:c]) {
+        return NO;
+      }
+    } else {
+      if (![restOfStringCharacterSet characterIsMember:c]) {
+        return NO;
+      }
+    }
+  }
+  return YES;
+}
+
 + (BOOL)regexValidateIdentifier:(NSString *)identifier
 {
-  static NSRegularExpression *regex;
+  static NSCharacterSet *firstCharacterSet;
+  static NSCharacterSet *restOfStringCharacterSet;
   static dispatch_once_t onceToken;
   static NSMutableSet *cachedIdentifiers;
   dispatch_once(&onceToken, ^{
-    NSString *regexString = @"^[0-9a-zA-Z_]+[0-9a-zA-Z _-]*$";
-    regex = [NSRegularExpression regularExpressionWithPattern:regexString
-                                                      options:0
-                                                        error:NULL];
+    NSMutableCharacterSet *mutableSet = [NSMutableCharacterSet alphanumericCharacterSet];
+    [mutableSet addCharactersInString:@"_"];
+    firstCharacterSet = [mutableSet copy];
+
+    [mutableSet addCharactersInString:@"- "];
+    restOfStringCharacterSet = [mutableSet copy];
     cachedIdentifiers = [[NSMutableSet alloc] init];
   });
 
   @synchronized(self) {
     if (![cachedIdentifiers containsObject:identifier]) {
-      NSUInteger numMatches = [regex numberOfMatchesInString:identifier options:0 range:NSMakeRange(0, identifier.length)];
-      if (numMatches > 0) {
+      if ([self matchString:identifier
+          firstCharacterSet:firstCharacterSet
+   restOfStringCharacterSet:restOfStringCharacterSet]) {
         [cachedIdentifiers addObject:identifier];
       } else {
         return NO;
       }
     }
   }
-
   return YES;
 }
 
@@ -302,6 +334,49 @@
 + (long)unixTimeNow
 {
   return (long)round([[NSDate date] timeIntervalSince1970]);
+}
+
++ (id)getVariable:(NSString *)variableName fromInstance:(NSObject *)instance {
+  Ivar ivar = class_getInstanceVariable([instance class], [variableName UTF8String]);
+  if (ivar != NULL) {
+    const char *encoding = ivar_getTypeEncoding(ivar);
+    if (encoding != NULL && encoding[0] == '@') {
+      return object_getIvar(instance, ivar);
+    }
+  }
+
+  return nil;
+}
+
++ (NSNumber *)getNumberValue:(NSString *)text {
+  NSNumber *value = @0;
+
+  NSLocale *locale = [NSLocale currentLocale];
+
+  NSString *ds = [locale objectForKey:NSLocaleDecimalSeparator] ?: @".";
+  NSString *gs = [locale objectForKey:NSLocaleGroupingSeparator] ?: @",";
+  NSString *separators = [ds stringByAppendingString:gs];
+
+  NSString *regex = [NSString stringWithFormat:@"[+-]?([0-9]+[%1$@]?)?[%1$@]?([0-9]+[%1$@]?)+", separators];
+  NSRegularExpression *re = [NSRegularExpression regularExpressionWithPattern:regex
+                                                                      options:0
+                                                                        error:nil];
+  NSTextCheckingResult *match = [re firstMatchInString:text
+                                               options:0
+                                                 range:NSMakeRange(0, text.length)];
+  if (match) {
+    NSString *validText = [text substringWithRange:match.range];
+    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+    formatter.locale = locale;
+    formatter.numberStyle = NSNumberFormatterDecimalStyle;
+
+    value = [formatter numberFromString:validText];
+    if (nil == value) {
+      value = @([validText floatValue]);
+    }
+  }
+
+  return value;
 }
 
 - (instancetype)init

@@ -6,7 +6,9 @@ target 'AndJummum' do
   # use_frameworks!
 
   # Pods for AndJummum
-  pod 'FBSDKLoginKit'
+   pod 'FBSDKLoginKit'
+   pod 'Firebase/Core'
+   pod 'Firebase/Messaging'
 
   target 'AndJummumTests' do
     inherit! :search_paths

@@ -41,7 +41,6 @@ static NSString * const reuseIdentifierPromoThumbNail = @"CustomTableViewCellPro
 
 -(IBAction)unwindToHotDeal:(UIStoryboardSegue *)segue
 {
-    
 }
 
 -(void)viewDidLayoutSubviews
@@ -66,13 +65,14 @@ static NSString * const reuseIdentifierPromoThumbNail = @"CustomTableViewCellPro
 {
     [super viewDidAppear:animated];
     
-    
-    UserAccount *userAccount = [UserAccount getCurrentUserAccount];
-    self.homeModel = [[HomeModel alloc]init];
-    self.homeModel.delegate = self;
-    //เพิ่งสั่งอาหารร้านนี้ไปครั้งแรก ในหน้านี้ก็จะ โหลดข้อมูล hotdeal จาก db ของร้านนี้มาแสดง
-    NSInteger branchID = [Receipt getBranchIDWithMaxModifiedDateWithMemberID:userAccount.userAccountID];
-    [self.homeModel downloadItems:dbHotDealWithBranchID withData:@[userAccount,@(branchID),@([_promotionList count])]];
+    {
+        UserAccount *userAccount = [UserAccount getCurrentUserAccount];
+        self.homeModel = [[HomeModel alloc]init];
+        self.homeModel.delegate = self;
+        //เพิ่งสั่งอาหารร้านนี้ไปครั้งแรก ในหน้านี้ก็จะ โหลดข้อมูล hotdeal จาก db ของร้านนี้มาแสดง
+        NSInteger branchID = [Receipt getBranchIDWithMaxModifiedDateWithMemberID:userAccount.userAccountID];
+        [self.homeModel downloadItems:dbHotDealWithBranchID withData:@[userAccount,@(branchID),@([_promotionList count])]];
+    }
 }
 
 
@@ -88,13 +88,14 @@ static NSString * const reuseIdentifierPromoThumbNail = @"CustomTableViewCellPro
     
     UserAccount *userAccount = [UserAccount getCurrentUserAccount];
     [self.homeModel downloadItems:dbHotDeal withData:@[userAccount,@0]];
+    
     tbvData.delegate = self;
     tbvData.dataSource = self;
 
     
     
     
-    NSString *message = [Setting getValue:@"117m" example:@"ค้นหา Deal"];
+    NSString *message = [Language getText:@"ค้นหา Deal"];
     searchBar.delegate = self;
     searchBar.placeholder = message;
     [searchBar setInputAccessoryView:self.toolBar];
@@ -164,14 +165,12 @@ static NSString * const reuseIdentifierPromoThumbNail = @"CustomTableViewCellPro
          {
              if (succeeded)
              {
-                 NSLog(@"succeed");
                  cell.imgVwValue.image = image;
              }
          }];
         float imageWidth = cell.frame.size.width -2*16 > 375?375:cell.frame.size.width -2*16;
         cell.imgVwValueHeight.constant = imageWidth/16*9;
         cell.imgVwValue.contentMode = UIViewContentModeScaleAspectFit;
-        NSLog(@"imgVwValueTop :%f",cell.imgVwValueTop.constant);
         
         
         if (!_lastItemReached && section == [_filterPromotionList count]-1)
@@ -202,8 +201,7 @@ static NSString * const reuseIdentifierPromoThumbNail = @"CustomTableViewCellPro
          {
              if (succeeded)
              {
-                 NSLog(@"succeed");
-                 cell.imgVwValue.image = image;                 
+                 cell.imgVwValue.image = image;
              }
          }];
         
@@ -251,7 +249,6 @@ static NSString * const reuseIdentifierPromoThumbNail = @"CustomTableViewCellPro
          {
              if (succeeded)
              {
-                 NSLog(@"succeed");
                  cell.imgVwValue.image = image;
              }
          }];
@@ -346,7 +343,6 @@ static NSString * const reuseIdentifierPromoThumbNail = @"CustomTableViewCellPro
     // but we'll not do that any more... it made problems
     // it's better to set self.searchBarActive = YES when user typed something
     //    [self.searchBar setShowsCancelButton:YES animated:YES];
-//    UISearchBar *sbText = [self.view viewWithTag:300];
     [searchBar setShowsCancelButton:YES animated:YES];
 }
 
@@ -358,13 +354,11 @@ static NSString * const reuseIdentifierPromoThumbNail = @"CustomTableViewCellPro
     //    self.searchBarActive = NO;
     
     //    [self.searchBar setShowsCancelButton:NO animated:YES];
-//    UISearchBar *sbText = [self.view viewWithTag:300];
     [searchBar setShowsCancelButton:NO animated:YES];
 }
 
 -(void)cancelSearching
 {
-//    UISearchBar *sbText = [self.view viewWithTag:300];
     self.searchBarActive = NO;
     [searchBar resignFirstResponder];
     searchBar.text  = @"";
@@ -374,35 +368,17 @@ static NSString * const reuseIdentifierPromoThumbNail = @"CustomTableViewCellPro
 -(void)itemsDownloaded:(NSArray *)items manager:(NSObject *)objHomeModel
 {
     HomeModel *homeModel = (HomeModel *)objHomeModel;
-    if(homeModel.propCurrentDB == dbHotDeal)
+    if(homeModel.propCurrentDB == dbHotDeal || homeModel.propCurrentDB == dbHotDealWithBranchID)
     {
-        if([items[0] count] == 0)
+        if([items[0] count] == 0 && homeModel.propCurrentDB == dbHotDeal)
         {
             _lastItemReached = YES;
             return;
         }
-        if(!_promotionList)
-        {
-            _promotionList = [[NSMutableArray alloc]init];
-        }
-        [_promotionList addObjectsFromArray:items[0]];
-        _promotionList = [Promotion sortWithdataList:_promotionList];
+
+        [Utility updateSharedObject:items];
+        _promotionList = [Promotion getPromotionList];
         [self searchBar:searchBar textDidChange:searchBar.text];
-    }
-    else if(homeModel.propCurrentDB == dbHotDealWithBranchID)
-    {
-        //add update
-        NSMutableArray *promotionList = items[0];
-        if(!_promotionList)
-        {
-            _promotionList = [[NSMutableArray alloc]init];
-        }
-        BOOL update = [Utility updateDataList:promotionList dataList:_promotionList];
-        if(update)
-        {            
-            _promotionList = [Promotion sortWithdataList:_promotionList];
-            [self searchBar:searchBar textDidChange:searchBar.text];
-        }
     }
 }
 

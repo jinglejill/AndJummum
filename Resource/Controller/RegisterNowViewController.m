@@ -10,7 +10,6 @@
 #import "TermsOfServiceViewController.h"
 #import "CustomTableViewCellText.h"
 #import "UserAccount.h"
-#import "Setting.h"
 
 
 @interface RegisterNowViewController ()
@@ -32,6 +31,7 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
 @synthesize topViewHeight;
 @synthesize bottomViewHeight;
 @synthesize userAccount;
+@synthesize btnCreateAccount;
 
 
 -(void)viewDidLayoutSubviews
@@ -42,6 +42,9 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
     
     float topPadding = window.safeAreaInsets.top;
     topViewHeight.constant = topPadding == 0?20:topPadding;
+    
+    
+    [btnCreateAccount setTitle:[Language getText:@"สร้างบัญชี"] forState:UIControlStateNormal];
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -51,14 +54,14 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
     {
         _userAccount = userAccount;
         [tbvData reloadData];
-        NSString *message = [Setting getValue:@"045m" example:@"คุณล็อคอินผ่าน facebook สำเร็จแล้ว กรุณาใส่วันเกิดและเบอร์โทรศัพท์ เพื่อเราจะได้สร้างบัญชีสำหรับใช้งานให้คุณ"];
+        NSString *message = [Language getText:@"คุณล็อคอินผ่าน facebook สำเร็จแล้ว กรุณาใส่วันเกิดและเบอร์โทรศัพท์ เพื่อเราจะได้สร้างบัญชีสำหรับใช้งานให้คุณ"];
         [self showAlert:@"" message:message];
     }
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField;
 {
-    if(textField.tag == 4)
+    if(textField.tag == 5)
     {
         NSString *strDate = textField.text;
         if([strDate isEqualToString:@""])
@@ -78,12 +81,52 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
 
 - (IBAction)datePickerChanged:(id)sender
 {
-    UITextField *textField = (UITextField *)[self.view viewWithTag:4];
+    UITextField *textField = (UITextField *)[self.view viewWithTag:5];
     if([textField isFirstResponder])
     {
         textField.text = [Utility dateToString:dtPicker.date toFormat:@"d MMM yyyy"];
         _userAccount.birthDate = dtPicker.date;
     }
+}
+
+- (BOOL)textFieldShouldClear:(UITextField *)textField
+{
+    switch (textField.tag)
+    {
+        case 1:
+        {
+            _userAccount.username = @"";
+            _userAccount.email = @"";
+        }
+            break;
+        case 2:
+        {
+            _userAccount.password = @"";
+        }
+            break;
+        case 3:
+        {
+            _userAccount.firstName = @"";
+        }
+            break;
+        case 4:
+        {
+            _userAccount.lastName = @"";
+        }
+            break;
+        case 5:
+        {
+            _userAccount.birthDate = nil;
+        }
+        case 6:
+        {
+            _userAccount.phoneNo = @"";
+        }
+            break;
+        default:
+            break;
+    }
+    return YES;
 }
 
 -(void)textFieldDidEndEditing:(UITextField *)textField
@@ -103,10 +146,15 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
             break;
         case 3:
         {
-            _userAccount.fullName = [Utility trimString:textField.text];
+            _userAccount.firstName = [Utility trimString:textField.text];
         }
             break;
-        case 5:
+        case 4:
+        {
+            _userAccount.lastName = [Utility trimString:textField.text];
+        }
+            break;
+        case 6:
         {
             _userAccount.phoneNo = [Utility removeDashAndSpaceAndParenthesis:[Utility trimString:textField.text]];
         }
@@ -122,7 +170,7 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
     // Do any additional setup after loading the view.
     
     
-    NSString *title = [Setting getValue:@"056t" example:@"สร้างบัญชีใหม่"];
+    NSString *title = [Language getText:@"สร้างบัญชีใหม่"];
     lblNavTitle.text = title;
     _userAccount = [[UserAccount alloc]init];
     tbvData.delegate = self;
@@ -163,11 +211,11 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
     
     if(userAccount)
     {
-        return 4;
+        return 5;
     }
     else
     {
-        return 5;
+        return 6;
     }
 }
 
@@ -177,7 +225,7 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
     NSInteger item = indexPath.item;
     
     
-
+    
     CustomTableViewCellText *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifierText];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
@@ -189,46 +237,67 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
             {
                 cell.textValue.tag = 1;
                 cell.textValue.delegate = self;
-                cell.textValue.placeholder = @"อีเมล";
+                cell.textValue.placeholder = [Language getText:@"อีเมล"];
                 cell.textValue.text = _userAccount.email;
                 cell.textValue.enabled = NO;
                 [cell.textValue setInputAccessoryView:self.toolBar];
                 [cell.textValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
+                cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeNone;
+                cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
             }
                 break;
             case 1:
             {
                 cell.textValue.tag = 3;
                 cell.textValue.delegate = self;
-                cell.textValue.placeholder = @"ชื่อเต็ม";
-                cell.textValue.text = _userAccount.fullName;
+                cell.textValue.placeholder = [Language getText:@"ชื่อ"];
+                cell.textValue.text = _userAccount.firstName;
                 cell.textValue.enabled = NO;
                 [cell.textValue setInputAccessoryView:self.toolBar];
                 [cell.textValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
+                cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeWords;
+                cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
             }
                 break;
             case 2:
             {
                 cell.textValue.tag = 4;
                 cell.textValue.delegate = self;
-                cell.textValue.placeholder = @"วันเกิด";
-                cell.textValue.inputView = dtPicker;
-                cell.textValue.text = [Utility dateToString:_userAccount.birthDate toFormat:@"dd/MM/yyyy"];
-                cell.textValue.enabled = YES;
+                cell.textValue.placeholder = [Language getText:@"นามสกุล"];
+                cell.textValue.text = _userAccount.lastName;
+                cell.textValue.enabled = NO;
                 [cell.textValue setInputAccessoryView:self.toolBar];
                 [cell.textValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
+                cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeWords;
+                cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
             }
                 break;
             case 3:
             {
                 cell.textValue.tag = 5;
                 cell.textValue.delegate = self;
-                cell.textValue.placeholder = @"เบอร์โทร.";
+                cell.textValue.placeholder = [Language getText:@"วันเกิด (optional)"];
+                cell.textValue.inputView = dtPicker;
+                cell.textValue.text = [Utility dateToString:_userAccount.birthDate toFormat:@"d MMM yyyy"];
+                cell.textValue.enabled = YES;
+                [cell.textValue setInputAccessoryView:self.toolBar];
+                [cell.textValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
+                cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeNone;
+                cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
+            }
+                break;
+            case 4:
+            {
+                cell.textValue.tag = 6;
+                cell.textValue.delegate = self;
+                cell.textValue.placeholder = [Language getText:@"เบอร์โทร. (optional)"];
                 cell.textValue.text = [Utility setPhoneNoFormat:_userAccount.phoneNo];
                 cell.textValue.keyboardType = UIKeyboardTypePhonePad;
                 cell.textValue.enabled = YES;
                 [cell.textValue setInputAccessoryView:self.toolBar];
                 [cell.textValue addTarget:self action:@selector(txtPhoneNoDidChange:) forControlEvents:UIControlEventEditingChanged];
+                cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeNone;
+                cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
             }
                 break;
             default:
@@ -243,58 +312,81 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
             {
                 cell.textValue.tag = 1;
                 cell.textValue.delegate = self;
-                cell.textValue.placeholder = @"อีเมล";
+                cell.textValue.placeholder = [Language getText:@"อีเมล"];
                 cell.textValue.text = _userAccount.username;
                 cell.textValue.enabled = YES;
                 [cell.textValue setInputAccessoryView:self.toolBar];
                 [cell.textValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
+                cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeNone;
+                cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
             }
                 break;
             case 1:
             {
                 cell.textValue.tag = 2;
                 cell.textValue.delegate = self;
-                cell.textValue.placeholder = @"พาสเวิร์ด";
+                cell.textValue.placeholder = [Language getText:@"พาสเวิร์ด"];
                 cell.textValue.text = _userAccount.password;
                 cell.textValue.secureTextEntry = YES;
                 cell.textValue.enabled = YES;
                 [cell.textValue setInputAccessoryView:self.toolBar];
                 [cell.textValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
+                cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeNone;
+                cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
             }
                 break;
             case 2:
             {
                 cell.textValue.tag = 3;
                 cell.textValue.delegate = self;
-                cell.textValue.placeholder = @"ชื่อเต็ม";
-                cell.textValue.text = _userAccount.fullName;
+                cell.textValue.placeholder = [Language getText:@"ชื่อ"];
+                cell.textValue.text = _userAccount.firstName;
                 cell.textValue.enabled = YES;
                 [cell.textValue setInputAccessoryView:self.toolBar];
                 [cell.textValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
+                cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeWords;
+                cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
             }
                 break;
             case 3:
             {
                 cell.textValue.tag = 4;
                 cell.textValue.delegate = self;
-                cell.textValue.placeholder = @"วันเกิด";
-                cell.textValue.inputView = dtPicker;
-                cell.textValue.text = [Utility dateToString:_userAccount.birthDate toFormat:@"dd/MM/yyyy"];
+                cell.textValue.placeholder = [Language getText:@"นามสกุล"];
+                cell.textValue.text = _userAccount.lastName;
                 cell.textValue.enabled = YES;
                 [cell.textValue setInputAccessoryView:self.toolBar];
                 [cell.textValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
+                cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeWords;
+                cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
             }
                 break;
             case 4:
             {
                 cell.textValue.tag = 5;
                 cell.textValue.delegate = self;
-                cell.textValue.placeholder = @"เบอร์โทร.";
+                cell.textValue.placeholder = [Language getText:@"วันเกิด (optional)"];
+                cell.textValue.inputView = dtPicker;
+                cell.textValue.text = [Utility dateToString:_userAccount.birthDate toFormat:@"d MMM yyyy"];
+                cell.textValue.enabled = YES;
+                [cell.textValue setInputAccessoryView:self.toolBar];
+                [cell.textValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
+                cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeNone;
+                cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
+            }
+                break;
+            case 5:
+            {
+                cell.textValue.tag = 6;
+                cell.textValue.delegate = self;
+                cell.textValue.placeholder = [Language getText:@"เบอร์โทร. (optional)"];
                 cell.textValue.text = [Utility setPhoneNoFormat:_userAccount.phoneNo];
                 cell.textValue.keyboardType = UIKeyboardTypePhonePad;
                 cell.textValue.enabled = YES;
                 [cell.textValue setInputAccessoryView:self.toolBar];
                 [cell.textValue addTarget:self action:@selector(txtPhoneNoDidChange:) forControlEvents:UIControlEventEditingChanged];
+                cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeNone;
+                cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
             }
                 break;
             default:
@@ -327,18 +419,18 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
 {
     if(userAccount)//facebook login
     {
-        if(!_userAccount.birthDate)
-        {
-            [self showAlert:@"" message:@"กรุณาระบุวันเกิด"];
-            return;
-        }
-        
-        
-        if([Utility isStringEmpty:_userAccount.phoneNo])
-        {
-            [self showAlert:@"" message:@"กรุณาระบุเบอร์โทร."];
-            return;
-        }
+        //        if(!_userAccount.birthDate)
+        //        {
+        //            [self showAlert:@"" message:@"กรุณาระบุวันเกิด"];
+        //            return;
+        //        }
+        //
+        //
+        //        if([Utility isStringEmpty:_userAccount.phoneNo])
+        //        {
+        //            [self showAlert:@"" message:@"กรุณาระบุเบอร์โทร."];
+        //            return;
+        //        }
         
         _userAccount.modifiedUser = [Utility modifiedUser];
         _userAccount.modifiedDate = [Utility currentDateTime];
@@ -387,34 +479,45 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
     
     if(![Utility validateStrongPassword:_userAccount.password])
     {
-        [self showAlert:@"" message:@"พาสเวิร์ดต้องประกอบไปด้วย 1.อักษรตัวเล็กอย่างน้อย 1 ตัว\n2.อักษรตัวใหญ่อย่างน้อย 1 ตัว\n3.ตัวเลขหรืออักษรพิเศษอย่างน้อย 1 ตัว\n4.ความยาวขั้นต่ำ 8 ตัวอักษร"];
+        [self showAlert:@"" message:@"พาสเวิร์ดต้องประกอบไปด้วย\n1.อักษรตัวเล็กอย่างน้อย 1 ตัว\n2.อักษรตัวใหญ่อย่างน้อย 1 ตัว\n3.ตัวเลขหรืออักษรพิเศษอย่างน้อย 1 ตัว\n4.ความยาวขั้นต่ำ 8 ตัวอักษร"];
         return ;
     }
     
-    
-    if([Utility isStringEmpty:_userAccount.fullName])
+    if([Utility isStringEmpty:_userAccount.firstName])
     {
-        [self showAlert:@"" message:@"กรุณาระบุชื่อเต็ม"];
+        [self showAlert:@"" message:@"กรุณาระบุชื่อ"];
         return;
     }
     
-    
-    if(!_userAccount.birthDate)
+    if([Utility isStringEmpty:_userAccount.lastName])
     {
-        [self showAlert:@"" message:@"กรุณาระบุวันเกิด"];
+        [self showAlert:@"" message:@"กรุณาระบุนามสกุล"];
         return;
     }
     
+    //    if([Utility isStringEmpty:_userAccount.fullName])
+    //    {
+    //        [self showAlert:@"" message:@"กรุณาระบุชื่อเต็ม"];
+    //        return;
+    //    }
     
-    if([Utility isStringEmpty:_userAccount.phoneNo])
-    {
-        [self showAlert:@"" message:@"กรุณาระบุเบอร์โทร."];
-        return;
-    }
+    
+    //    if(!_userAccount.birthDate)
+    //    {
+    //        [self showAlert:@"" message:@"กรุณาระบุวันเกิด"];
+    //        return;
+    //    }
+    //
+    //
+    //    if([Utility isStringEmpty:_userAccount.phoneNo])
+    //    {
+    //        [self showAlert:@"" message:@"กรุณาระบุเบอร์โทร."];
+    //        return;
+    //    }
     //-----
     
     
-    UserAccount *userAccount = [[UserAccount alloc]initWithUsername:_userAccount.username password:[Utility hashTextSHA256:_userAccount.password] deviceToken:[Utility deviceToken] fullName:_userAccount.fullName nickName:@"" birthDate:_userAccount.birthDate email:_userAccount.email phoneNo:_userAccount.phoneNo lineID:@"" roleID:0];
+    UserAccount *userAccount = [[UserAccount alloc]initWithUsername:_userAccount.username password:[Utility hashTextSHA256:_userAccount.password] deviceToken:[Utility deviceToken] firstName:_userAccount.firstName lastName:_userAccount.lastName fullName:_userAccount.fullName nickName:@"" birthDate:_userAccount.birthDate email:_userAccount.email phoneNo:_userAccount.phoneNo lineID:@"" roleID:0];
     [self.homeModel insertItems:dbUserAccount withData:userAccount actionScreen:@"create new account"];
     [self loadingOverlayView];
 }
@@ -434,12 +537,11 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
     
     //show terms of service
     NSDictionary *dicTosAgree = [[NSUserDefaults standardUserDefaults] valueForKey:@"tosAgree"];
-    NSString *username = _userAccount.username; //[[FBSDKAccessToken currentAccessToken] userID];
+    NSString *username = _userAccount.username;
     NSNumber *tosAgree = [dicTosAgree objectForKey:username];
     if(tosAgree)
     {
         [self performSegueWithIdentifier:@"segQrCodeScanTable" sender:self];
-//        [self performSegueWithIdentifier:@"segHotDeal" sender:self];
     }
     else
     {
@@ -457,7 +559,7 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
     if([[segue identifier] isEqualToString:@"segTermsOfService"])
     {
         TermsOfServiceViewController *vc = segue.destinationViewController;
-        vc.username = _userAccount.email;
+        vc.username = _userAccount.username;
     }
 }
 

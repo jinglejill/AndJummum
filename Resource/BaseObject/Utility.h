@@ -45,9 +45,11 @@
 #define cSystem4     [UIColor colorWithRed:70/255.0 green:70/255.0 blue:70/255.0 alpha:1]
 #define cSystem4_10     [UIColor colorWithRed:236/255.0 green:236/255.0 blue:236/255.0 alpha:1]
 #define cSystem1_20     [UIColor colorWithRed:255/255.0 green:215/255.0 blue:218/255.0 alpha:1]
+#define cSystem1_30     [UIColor colorWithRed:255/255.0 green:196/255.0 blue:200/255.0 alpha:1]
+#define cSystem2_20     [UIColor colorWithRed:223/255.0 green:247/255.0 blue:243/255.0 alpha:1]
+#define cSystem2_30     [UIColor colorWithRed:208/255.0 green:244/255.0 blue:238/255.0 alpha:1]
+#define cRibbon     [UIColor colorWithRed:246/255.0 green:166/255.0 blue:171/255.0 alpha:1]
 
-//#define cSystem4_10     [UIColor colorWithRed:235/255.0 green:235/255.0 blue:235/255.0 alpha:1]
-//#define cSystem1_20     [UIColor colorWithRed:255/255.0 green:215/255.0 blue:218/255.0 alpha:1]
 
 #define cTextFieldBorder     [UIColor colorWithRed:204/255.0 green:204/255.0 blue:204/255.0 alpha:1]
 #define UIColorFromRGB(rgbValue) \
@@ -55,6 +57,7 @@
 green:((float)((rgbValue & 0x00FF00) >>  8))/255.0 \
 blue:((float)((rgbValue & 0x0000FF) >>  0))/255.0 \
 alpha:1.0]
+
 
 
 
@@ -143,7 +146,6 @@ enum enumDB
     dbReceiptMaxModifiedDate,
     dbReceipt,
     dbPromotion,
-    dbFacebookComment,
     dbRewardPoint,
     dbRewardPointList,
     dbRewardPointSpent,
@@ -185,9 +187,14 @@ enum enumDB
     dbReceiptDisputeRatingUpdateAndReload,
     dbReceiptDisputeRatingAllAfterReceiptUpdateAndReload,
     dbMenuNote,
-    dbMenuNoteList,
-    dbOpeningTime
-
+    dbMenuNoteList,    
+    dbMenuBelongToBuffet,
+    dbBuffetOrder,
+    dbSettingWithKey,
+    dbPromotionAndRewardRedemption,
+    dbLuckyDrawTicket,
+    dbLuckyDrawTicketList,
+    dbRewardRedemptionLuckyDraw
 
     
 };
@@ -333,7 +340,20 @@ enum enumUrl
     urlMenuNoteUpdateList,
     urlMenuNoteDeleteList,
     urlOpeningTimeGet,
-    urlContactUs
+    urlOpeningTimeMenuBelongToBuffetGet,
+    urlContactUs,
+    urlMenuBelongToBuffetGetList,
+    urlBuffetOrderInsertList,
+    urlSettingWithKeyGet,
+    urlPromotionAndRewardRedemption,
+    urlMenuGet,
+    urlLuckyDrawTicketInsert,
+    urlLuckyDrawTicketUpdate,
+    urlLuckyDrawTicketDelete,
+    urlLuckyDrawTicketInsertList,
+    urlLuckyDrawTicketUpdateList,
+    urlLuckyDrawTicketDeleteList,
+    urlRewardRedemptionLuckyDrawGet
     
 
     
@@ -360,6 +380,8 @@ enum enumUrl
 + (NSString *) deviceToken;
 + (NSInteger) deviceID;
 + (NSString *) dbName;
++(void)setBundleID:(NSString *)bundleID;
++(NSString *)bundleID;
 + (NSString *) formatDate:(NSString *)strDate fromFormat:(NSString *)fromFormat toFormat:(NSString *)toFormat;
 + (NSDate *) stringToDate:(NSString *)strDate fromFormat:(NSString *)fromFormat;
 + (NSString *) dateToString:(NSDate *)date toFormat:(NSString *)toFormat;
@@ -388,8 +410,6 @@ enum enumUrl
 + (NSString *)modifiedUser;
 + (NSString *)modifiedVC;
 + (void)setModifiedUser:(NSString *)modifiedUser;
-+ (BOOL) finishLoadSharedData;
-+ (void) setFinishLoadSharedData:(BOOL)finish;
 + (NSData *)dataFromHexString:(NSString *)string;
 + (NSString *)makeFirstLetterLowerCase:(NSString *)text;
 + (NSString *)makeFirstLetterUpperCase:(NSString *)text;
@@ -457,5 +477,6 @@ enum enumUrl
 +(UIImage *)getImageFromCache:(NSString *)imageName;
 +(void)saveImageInCache:(UIImage *)image imageName:(NSString *)imageName;
 +(NSString *)formatPhoneNo:(NSString *)phoneNo;
+
 @end
 

@@ -20,6 +20,7 @@
 #import "FacebookComment.h"
 
 
+
 @interface LogInViewController ()
 {
     FBSDKLoginButton *_loginButton;
@@ -37,11 +38,17 @@
 @synthesize txtEmail;
 @synthesize txtPassword;
 @synthesize btnRememberMe;
+@synthesize btnRememberMeWidth;
+@synthesize btnRegisterNow;
+@synthesize btnForgotPassword;
 @synthesize btnLogIn;
 @synthesize imgVwValueHeight;
 @synthesize lblOrBottom;
 @synthesize imgVwLogoText;
 @synthesize lblLogInTop;
+@synthesize lblPipeLeading;
+@synthesize btnLangEn;
+@synthesize btnLangTH;
 
 
 -(void)viewDidLayoutSubviews
@@ -54,12 +61,12 @@
     
     UIWindow *window = UIApplication.sharedApplication.keyWindow;
     float bottomPadding = window.safeAreaInsets.bottom;
-    float topPadding = window.safeAreaInsets.top;
+//    float topPadding = window.safeAreaInsets.top;
     _loginButton.center = self.view.center;
     CGRect frame = _loginButton.frame;
-    frame.origin.y = self.view.frame.size.height - bottomPadding - bottom + 11;//frame.origin.y + 33;
+    frame.origin.y = self.view.frame.size.height - bottomPadding - bottom + 11;
     _loginButton.frame = frame;
-
+    
     
     
     lblLogInTop.constant = 7 + bottomPadding;
@@ -68,12 +75,41 @@
         //hide jummum text
         imgVwLogoText.hidden = YES;
     }
+    
+    
+
+    if(_rememberMe)
+    {
+        [btnRememberMe setTitle:[Language getText:@"◼︎ จำฉันไว้ในระบบ"] forState:UIControlStateNormal];
+    }
+    else
+    {
+        [btnRememberMe setTitle:[Language getText:@"◻︎ จำฉันไว้ในระบบ"] forState:UIControlStateNormal];
+    }
+    [btnRememberMe sizeToFit];
+    btnRememberMeWidth.constant = btnRememberMe.frame.size.width;
+    
+    
+    
+    [btnRegisterNow setTitle:[Language getText:@"ลงทะเบียน"] forState:UIControlStateNormal];
+    [btnRegisterNow sizeToFit];
+    
+    
+    
+    [btnForgotPassword setTitle:[Language getText:@"ลืมรหัสผ่าน"] forState:UIControlStateNormal];
+    [btnForgotPassword sizeToFit];
+    
+    
+    
+    lblPipeLeading.constant = (btnForgotPassword.frame.origin.x - (btnRegisterNow.frame.origin.x + btnRegisterNow.frame.size.width))/2;
+    
+    
 }
 
 - (IBAction)rememberMe:(id)sender
 {
-    _rememberMe = !_rememberMe;
-    if(_rememberMe)
+    
+    if(!_rememberMe)
     {
         [btnRememberMe setTitle:@"◼︎ จำฉันไว้ในระบบ" forState:UIControlStateNormal];
     }
@@ -81,6 +117,7 @@
     {
         [btnRememberMe setTitle:@"◻︎ จำฉันไว้ในระบบ" forState:UIControlStateNormal];
     }
+    _rememberMe = !_rememberMe;
 }
 
 - (IBAction)logIn:(id)sender
@@ -104,7 +141,7 @@
     userAccount.password = [Utility hashTextSHA256:txtPassword.text];
     
     
-    LogIn *logIn = [[LogIn alloc]initWithUsername:userAccount.username status:1 deviceToken:[Utility deviceToken]];
+    LogIn *logIn = [[LogIn alloc]initWithUsername:userAccount.username status:1 deviceToken:[Utility deviceToken] model:[self deviceName]];
     [self.homeModel insertItems:dbUserAccountValidate withData:@[userAccount,logIn] actionScreen:@"validate userAccount"];
     [self loadingOverlayView];
     
@@ -113,12 +150,6 @@
 
 - (IBAction)registerNow:(id)sender
 {
-    //test
-//    BOOL turnOnRemote = [[UIApplication sharedApplication] isRegisteredForRemoteNotifications];
-//    NSLog(@"turn on remote push: %ld",turnOnRemote);
-//    NSString *iTunesLink = @"https://itunes.apple.com/th/app/the-1-card/id442873215?mt=8";
-//    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:iTunesLink]];
-    
     [self performSegueWithIdentifier:@"segRegisterNow" sender:self];
 }
 
@@ -148,7 +179,7 @@
         txtEmail.text = [[NSUserDefaults standardUserDefaults] valueForKey:@"rememberEmail"];
         txtPassword.text = [[NSUserDefaults standardUserDefaults] valueForKey:@"rememberPassword"];
     }
-        
+    
     if (![FBSDKAccessToken currentAccessToken])
     {
         _faceBookLogIn = NO;
@@ -156,7 +187,7 @@
     if(![[NSUserDefaults standardUserDefaults] integerForKey:@"logInSession"])
     {
         _appLogIn = NO;
-    } 
+    }
 }
 
 - (void)viewDidLoad
@@ -199,10 +230,10 @@
     _loginButton = [[FBSDKLoginButton alloc] init];
     _loginButton.delegate = self;
     _loginButton.readPermissions = @[@"public_profile", @"email"];
-//    _loginButton.readPermissions = @[@"public_profile", @"email",@"user_friends",@"user_birthday",@"user_about_me",@"user_likes",@"user_work_history"];
+    //    _loginButton.readPermissions = @[@"public_profile", @"email",@"user_friends",@"user_birthday",@"user_about_me",@"user_likes",@"user_work_history"];
     
     
-
+    
     // Optional: Place the button in the center of your view.
     [self.view addSubview:_loginButton];
     if ([FBSDKAccessToken currentAccessToken])
@@ -251,15 +282,51 @@
     {
         [self logIn:nil];
     }
+    
+    [self setLanguageButton];
+}
+
+-(void)setLanguageButton
+{
+    if([[Language getLanguage] isEqualToString:@"TH"])
+    {
+        [btnLangTH setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [btnLangEn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        
+        btnLangTH.titleLabel.font = [UIFont fontWithName:@"Prompt-SemiBold" size:14];
+        btnLangEn.titleLabel.font = [UIFont fontWithName:@"Prompt-Regular" size:14];
+    }
+    else
+    {
+        [btnLangTH setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [btnLangEn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        
+        btnLangTH.titleLabel.font = [UIFont fontWithName:@"Prompt-Regular" size:14];
+        btnLangEn.titleLabel.font = [UIFont fontWithName:@"Prompt-SemiBold" size:14];
+    }
+}
+
+- (IBAction)switchToEN:(id)sender
+{
+    [Language setLanguage:@"EN"];
+    [self setLanguageButton];
+    [self viewDidLayoutSubviews];
+}
+
+- (IBAction)switchToTH:(id)sender
+{
+    [Language setLanguage:@"TH"];
+    [self setLanguageButton];
+    [self viewDidLayoutSubviews];
 }
 
 //facebook
 -(void)insertUserLoginAndUserAccount
 {
     NSLog(@"insert user log in");
-//    if(_faceBookLogIn)
+    //    if(_faceBookLogIn)
     {
-        [[[FBSDKGraphRequest alloc] initWithGraphPath:@"me" parameters:@{@"fields": @"location,email,name,first_name,gender,age_range,birthday,friends,likes"}]
+        [[[FBSDKGraphRequest alloc] initWithGraphPath:@"me" parameters:@{@"fields": @"location,email,name,first_name,last_name,gender,age_range,birthday,friends,likes"}]
          startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
              if (!error)
              {
@@ -272,8 +339,8 @@
                  //2.insert useraccount if not exist
                  NSString *modifiedUser = [NSString stringWithFormat:@"%@",result[@"email"]];
                  [Utility setModifiedUser:modifiedUser];
-                 LogIn *logIn = [[LogIn alloc]initWithUsername:result[@"id"] status:1 deviceToken:[Utility deviceToken]];
-                 UserAccount *userAccount = [[UserAccount alloc]initWithUsername:result[@"id"] password:txtPassword.text deviceToken:[Utility deviceToken] fullName:result[@"name"] nickName:@"" birthDate:birthday email:result[@"email"] phoneNo:@"" lineID:@"" roleID:0];
+                 LogIn *logIn = [[LogIn alloc]initWithUsername:result[@"id"] status:1 deviceToken:[Utility deviceToken] model:[self deviceName]];
+                 UserAccount *userAccount = [[UserAccount alloc]initWithUsername:result[@"id"] password:txtPassword.text deviceToken:[Utility deviceToken] firstName:result[@"first_name"] lastName:result[@"last_name"] fullName:result[@"name"] nickName:@"" birthDate:birthday email:result[@"email"] phoneNo:@"" lineID:@"" roleID:0];
                  [self.homeModel insertItems:dbLogInUserAccount withData:@[logIn,userAccount] actionScreen:@"insert login and useraccount if not exist in logIn screen"];
                  [self loadingOverlayView];
              }
@@ -303,7 +370,7 @@
             [UserAccount setCurrentUserAccount:userAccountList[0]];
             [Utility updateSharedObject:items];
             
-    
+            
             [[NSUserDefaults standardUserDefaults] setInteger:1 forKey:@"logInSession"];
             [[NSUserDefaults standardUserDefaults] setInteger:_rememberMe forKey:@"rememberMe"];
             if(_rememberMe)
@@ -328,13 +395,13 @@
                     }
                     else
                     {
-//                        if(_autoLogIn)
+                        //                        if(_autoLogIn)
                         {
-//
+                            //
                             [UIView setAnimationsEnabled:NO];
                             self.view.hidden = YES;
                             [self performSegueWithIdentifier:@"segQrCodeScanTable" sender:self];
-
+                            
                             
                             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                                 [UIView setAnimationsEnabled:YES];
@@ -358,12 +425,21 @@
         _userAccount = userAccount;
         [UserAccount setCurrentUserAccount:userAccount];
         [Utility updateSharedObject:items];
-        if([Utility isStringEmpty:userAccount.phoneNo] || !userAccount.birthDate)
+        
+        NSString *fbUsername = [NSString stringWithFormat:@"FB_%@",userAccount.username];
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        if(![userDefaults boolForKey:fbUsername])
         {
-            //go to register page
+            [userDefaults setBool:YES forKey:fbUsername];
             [self performSegueWithIdentifier:@"segRegisterNowFacebook" sender:self];
             return;
         }
+        //        if([Utility isStringEmpty:userAccount.phoneNo] || !userAccount.birthDate)
+        //        {
+        //            //go to register page
+        //            [self performSegueWithIdentifier:@"segRegisterNowFacebook" sender:self];
+        //            return;
+        //        }
         
         
         //show terms of service

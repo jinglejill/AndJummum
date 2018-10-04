@@ -83,6 +83,12 @@ static NSString * const reuseIdentifierReward = @"CustomTableViewCellReward";
     UIFont *font = [UIFont fontWithName:@"Prompt-Regular" size:12.0f];
     NSDictionary *attributes = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
     [segConValue setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    
+    
+    
+    [segConValue setTitle:[Language getText:@"ปัจจุบัน"] forSegmentAtIndex:0];
+    [segConValue setTitle:[Language getText:@"ใช้ไปแล้ว"] forSegmentAtIndex:1];
+    [segConValue setTitle:[Language getText:@"หมดอายุ"] forSegmentAtIndex:2];
 }
 
 - (void)viewDidLoad
@@ -92,7 +98,7 @@ static NSString * const reuseIdentifierReward = @"CustomTableViewCellReward";
     
     
     
-    NSString *title = [Setting getValue:@"069t" example:@"รางวัลของฉัน"];
+    NSString *title = [Language getText:@"รางวัลของฉัน"];
     lblNavTitle.text = title;
     tbvData.dataSource = self;
     tbvData.delegate = self;
@@ -162,7 +168,7 @@ static NSString * const reuseIdentifierReward = @"CustomTableViewCellReward";
         }
         else
         {
-            NSString *message = [Setting getValue:@"081m" example:@"คุณยังไม่มีรางวัล"];
+            NSString *message = [Language getText:@"คุณยังไม่มีรางวัล"];
             UILabel *noDataLabel         = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, tableView.bounds.size.height)];
             noDataLabel.text             = message;
             noDataLabel.textColor        = cSystem4;
@@ -183,7 +189,7 @@ static NSString * const reuseIdentifierReward = @"CustomTableViewCellReward";
         }
         else
         {
-            NSString *message = [Setting getValue:@"081m" example:@"คุณยังไม่มีรางวัล"];
+            NSString *message = [Language getText:@"คุณยังไม่มีรางวัล"];
             UILabel *noDataLabel         = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, tableView.bounds.size.height)];
             noDataLabel.text             = message;
             noDataLabel.textColor        = cSystem4;
@@ -249,19 +255,16 @@ static NSString * const reuseIdentifierReward = @"CustomTableViewCellReward";
          {
              if (succeeded)
              {
-                 NSLog(@"succeed");
                  cell.imgVwValue.image = image;
                  [self setImageDesign:cell.imgVwValue];
              }
          }];
         if(rewardRedemption.withInPeriod == 0)
         {
-            NSString *message = [Setting getValue:@"043m" example:@"ใช้ได้ 1 ครั้ง ภายใน %@"];
+            NSString *message = [Language getText:@"ใช้ได้ 1 ครั้ง ภายใน %@"];
             cell.lblCountDown.text = [NSString stringWithFormat:message,[Utility dateToString:rewardRedemption.usingEndDate toFormat:@"d MMM yyyy"]];
         }
 
-        
-        
         
         
         
@@ -303,13 +306,14 @@ static NSString * const reuseIdentifierReward = @"CustomTableViewCellReward";
          {
              if (succeeded)
              {
-                 NSLog(@"succeed");
                  cell.imgVwValue.image = image;
                  [self setImageDesign:cell.imgVwValue];
              }
          }];
-        cell.lblCountDown.hidden = YES;
-
+        NSString *message = [Language getText:@"ใช้ไปเมื่อ %@"];
+        PromoCode *promoCode = _promoCodeUsedList[item];
+        cell.lblCountDown.text = [NSString stringWithFormat:message,[Utility dateToString:promoCode.modifiedDate toFormat:@"d MMM yyyy HH:mm"]];
+        
         
         
         
@@ -351,19 +355,21 @@ static NSString * const reuseIdentifierReward = @"CustomTableViewCellReward";
          {
              if (succeeded)
              {
-                 NSLog(@"succeed");
                  cell.imgVwValue.image = image;
                  [self setImageDesign:cell.imgVwValue];
              }
          }];
         if(rewardRedemption.withInPeriod == 0)
         {
-            cell.lblCountDown.text = [NSString stringWithFormat:@"หมดอายุเมื่อ %@",[Utility dateToString:rewardRedemption.usingEndDate toFormat:@"d MMM yyyy"]];
+            NSString *message = [Language getText:@"หมดอายุเมื่อ %@"];
+            cell.lblCountDown.text = [NSString stringWithFormat:message,[Utility dateToString:rewardRedemption.usingEndDate toFormat:@"d MMM yyyy"]];
         }
         else
         {
-            cell.lblCountDown.text = @"00:00:00";
-            
+            NSString *message = [Language getText:@"หมดอายุเมื่อ %@"];
+            RewardPoint *rewardPoint = _rewardPointExpiredList[item];
+            NSDate *expiredDate = [Utility addSecond:rewardPoint.modifiedDate numberOfSecond:rewardRedemption.withInPeriod];
+            cell.lblCountDown.text = [NSString stringWithFormat:message,[Utility dateToString:expiredDate toFormat:@"d MMM yyyy HH:mm"]];
         }
         
         
@@ -384,13 +390,7 @@ static NSString * const reuseIdentifierReward = @"CustomTableViewCellReward";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSInteger section = indexPath.section;
-
-    {
-//        return 112+25;
-        return 139;
-    }
-    
+    return 139;
 }
 
 - (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
@@ -939,7 +939,7 @@ static NSString * const reuseIdentifierReward = @"CustomTableViewCellReward";
         RewardRedemption *rewardRedemption = _rewardRedemptionList[index];
         if(rewardRedemption.withInPeriod == 0)
         {
-            NSString *message = [Setting getValue:@"043m" example:@"ใช้ได้ 1 ครั้ง ภายใน %@"];
+            NSString *message = [Language getText:@"ใช้ได้ 1 ครั้ง ภายใน %@"];
             cell.lblCountDown.text = [NSString stringWithFormat:message,[Utility dateToString:rewardRedemption.usingEndDate toFormat:@"d MMM yyyy"]];
         }
         else
@@ -947,6 +947,5 @@ static NSString * const reuseIdentifierReward = @"CustomTableViewCellReward";
             cell.lblCountDown.text = [NSString stringWithFormat:@"%02ld:%02ld:%02ld", hours, minutes, seconds];
         }
     }
-    
 }
 @end

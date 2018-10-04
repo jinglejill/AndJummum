@@ -57,17 +57,16 @@ enum enumAction
 
 - (void)downloadItems:(enum enumDB)currentDB;
 - (void)downloadItems:(enum enumDB)currentDB withData:(NSObject *)data;
+- (void)downloadItemsJson:(enum enumDB)currentDB withData:(NSObject *)data;
+- (void)downloadItems:(enum enumDB)currentDB withData:(NSObject *)data completionBlock:(void (^)(BOOL succeeded, NSMutableArray *items))completionBlock;
 - (void)insertItems:(enum enumDB)currentDB withData:(NSObject *)data actionScreen:(NSString *)actionScreen;
 - (void)insertItemsJson:(enum enumDB)currentDB withData:(NSObject *)data actionScreen:(NSString *)actionScreen;
 - (void)updateItems:(enum enumDB)currentDB withData:(NSObject *)data actionScreen:(NSString *)actionScreen;
 - (void)deleteItems:(enum enumDB)currentDB withData:(NSObject *)data actionScreen:(NSString *)actionScreen;
-- (void)syncItems:(enum enumDB)currentDB withData:(NSObject *)data;
-//- (void)syncItemsWithoutLoadViewProcess:(enum enumDB)currentDB withData:(NSObject *)data;
 - (void)sendEmail:(NSString *)toAddress withSubject:(NSString *)subject andBody:(NSString *)body;
 - (void)uploadPhoto:(NSData *)photo fileName:(NSString *)fileName;
 - (void)downloadImageWithFileName:(NSString *)fileName completionBlock:(void (^)(BOOL succeeded, UIImage *image))completionBlock;
 - (void)downloadImageWithFileName:(NSString *)fileName type:(NSInteger)type branchID:(NSInteger)branchID completionBlock:(void (^)(BOOL succeeded, UIImage *image))completionBlock;
 - (void)downloadFileWithFileName:(NSString *)fileName completionBlock:(void (^)(BOOL succeeded, NSData *data))completionBlock;
-- (void)downloadItems:(enum enumDB)currentDB withData:(NSObject *)data completionBlock:(void (^)(BOOL succeeded, NSMutableArray *items))completionBlock;
-@end
 
+@end

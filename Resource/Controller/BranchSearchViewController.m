@@ -57,17 +57,14 @@ static NSString * const reuseIdentifierMenu = @"CustomTableViewCellMenu";
     
     float topPadding = window.safeAreaInsets.top;
     topViewHeight.constant = topPadding == 0?20:topPadding;
+    
+    
+    sbText.placeholder = [Language getText:@"ค้นหาร้านอาหาร"];
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    
-//    self.homeModel = [[HomeModel alloc]init];
-//    self.homeModel.delegate = self;
-//    Branch *branchWithMaxModifiedDate = [Branch getBranchWithMaxModifiedDate];
-//    [self.homeModel downloadItems:dbBranch withData:branchWithMaxModifiedDate.modifiedDate];
 }
 
 -(void)loadView
@@ -85,7 +82,7 @@ static NSString * const reuseIdentifierMenu = @"CustomTableViewCellMenu";
     // Do any additional setup after loading the view.
     
     
-    NSString *title = [Setting getValue:@"058t" example:@"เลือกร้าน"];
+    NSString *title = [Language getText:@"เลือกร้าน"];
     lblNavTitle.text = title;
     tbvBranch.delegate = self;
     tbvBranch.dataSource = self;
@@ -96,7 +93,7 @@ static NSString * const reuseIdentifierMenu = @"CustomTableViewCellMenu";
     textField.layer.borderWidth = 1;
     textField.font = [UIFont fontWithName:@"Prompt-Regular" size:14.0f];
     [self setTextFieldDesign:textField];
-    
+    [sbText becomeFirstResponder];
     
     //cancel button in searchBar
     UIFont *font = [UIFont fontWithName:@"Prompt-SemiBold" size:15.0f];
@@ -174,7 +171,6 @@ static NSString * const reuseIdentifierMenu = @"CustomTableViewCellMenu";
         }
 
         
-        
         return cell;
     }
     
@@ -229,15 +225,6 @@ static NSString * const reuseIdentifierMenu = @"CustomTableViewCellMenu";
     }
 }
 
-//-(void)itemsDownloaded:(NSArray *)items manager:(NSObject *)objHomeModel
-//{
-//    HomeModel *homeModel = (HomeModel *)objHomeModel;
-//    if(homeModel.propCurrentDB == dbBranch)
-//    {
-//        [Utility updateSharedObject:items];
-//    }
-//}
-
 #pragma mark - search
 
 - (void)filterContentForSearchText:(NSString*)searchText scope:(NSString*)scope
@@ -264,9 +251,6 @@ static NSString * const reuseIdentifierMenu = @"CustomTableViewCellMenu";
         self.homeModel = [[HomeModel alloc]init];
         self.homeModel.delegate = self;
         [self.homeModel downloadItems:dbBranchSearch withData:searchText];
-//        [self filterContentForSearchText:searchText scope:@""];
-//        [tbvBranch reloadData];
-         
     }
     else
     {
@@ -311,8 +295,6 @@ static NSString * const reuseIdentifierMenu = @"CustomTableViewCellMenu";
     sbText.text  = @"";
     _filterBranchList = nil;
     [tbvBranch reloadData];
-//    [self filterContentForSearchText:sbText.text scope:@""];
-    
 }
 
 -(void)itemsDownloaded:(NSArray *)items manager:(NSObject *)objHomeModel

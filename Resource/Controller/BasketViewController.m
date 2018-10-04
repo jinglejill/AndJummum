@@ -13,7 +13,6 @@
 #import "CustomTableViewCellTotal.h"
 #import "CustomTableViewCellNote.h"
 #import "CustomTableViewHeaderFooterButton.h"
-#import "CustomTableViewCellVoucherCode.h"
 #import "Receipt.h"
 #import "OrderTaking.h"
 #import "OrderNote.h"
@@ -28,8 +27,7 @@
 
 #import "Utility.h"
 #import "Setting.h"
-#import "OmiseSDK.h"
-#import "AndJummum-Swift.h"
+
 
 
 @interface BasketViewController ()
@@ -58,7 +56,6 @@ static NSString * const reuseIdentifierOrder = @"CustomTableViewCellOrder";
 static NSString * const reuseIdentifierTotal = @"CustomTableViewCellTotal";
 static NSString * const reuseIdentifierHeaderFooterButton = @"CustomTableViewHeaderFooterButton";
 static NSString * const reuseIdentifierNote = @"CustomTableViewCellNote";
-static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVoucherCode";
 
 
 @synthesize lblNavTitle;
@@ -66,10 +63,10 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
 @synthesize tbvTotal;
 @synthesize branch;
 @synthesize customerTable;
-@synthesize voucherView;
 @synthesize tbvTotalHeightConstant;
 @synthesize topViewHeight;
 @synthesize bottomButtonHeight;
+@synthesize buffetReceipt;
 
 
 -(IBAction)unwindToBasket:(UIStoryboardSegue *)segue;
@@ -79,67 +76,96 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
     [tbvTotal reloadData];
 }
 
-- (void)keyboardDidShow:(NSNotification *)notification
-{
-    NSDictionary* info = [notification userInfo];
-    CGRect kbRect = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-    kbRect = [self.view convertRect:kbRect toView:nil];
-    
-    CGSize kbSize = kbRect.size;
-    
-    
-    
-    // Assign new frame to your view
-    [UIView animateWithDuration:0.2f delay:0.0 options:UIViewAnimationOptionTransitionNone
-                     animations:^{
-                         [self.view setFrame:CGRectMake(0,kbSize.height*-1,self.view.frame.size.width,self.view.frame.size.height)]; //here taken -110 for example i.e. your view will be scrolled to -110. change its value according to your requirement.
-                     }
-                     completion:nil
-     ];
-}
-
--(void)keyboardDidHide:(NSNotification *)notification
-{
-    [UIView animateWithDuration:0.2f delay:0.0 options:UIViewAnimationOptionTransitionNone
-                     animations:^{
-                         [self.view setFrame:CGRectMake(0,0,self.view.frame.size.width,self.view.frame.size.height)];
-                         [self.view layoutSubviews];
-                     }
-                     completion:nil
-     ];
-    
-}
-
--(BOOL)textFieldShouldBeginEditing:(UITextField *)textField
-{
-    if(textField.tag == 1)
-    {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
-        return YES;
-    }
-    
-    return NO;
-}
-
-- (BOOL)textFieldShouldEndEditing:(UITextField *)textField
-{
-    if(textField.tag == 1)
-    {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
-        
-        [self.view endEditing:YES];
-        return YES;
-    }
-    
-    return YES;
-}
-
 -(void)textFieldDidEndEditing:(UITextField *)textField
 {
-    if(textField.tag == 1)
-    {
-        _voucherCode = [Utility trimString:textField.text];
+    if(textField.tag != 0)
+    {  
+        //remove ordertaking
+        NSInteger menuID = textField.tag;
+        NSMutableArray *currentOrderTakingList = [OrderTaking getCurrentOrderTakingList];
+        NSMutableArray *orderTakingList = [OrderTaking getOrderTakingListWithMenuID:menuID orderTakingList:currentOrderTakingList];
+        NSInteger quantity = [textField.text integerValue];
+        NSInteger currentOrderTakingCount = [orderTakingList count];
+        if(quantity < currentOrderTakingCount)
+        {
+            for(int i=0; i<currentOrderTakingCount-quantity; i++)
+            {
+                NSMutableArray *currentOrderTakingList = [OrderTaking getCurrentOrderTakingList];
+                NSMutableArray *orderTakingList = [OrderTaking getOrderTakingListWithMenuID:menuID orderTakingList:currentOrderTakingList];
+                
+                //remove orderTaking
+                OrderTaking *lastOrderTaking = orderTakingList[[orderTakingList count]-1];
+                [OrderTaking removeObject:lastOrderTaking];
+                [currentOrderTakingList removeObject:lastOrderTaking];
+                
+                
+                //remove orderNote
+                NSMutableArray *orderNoteList = [OrderNote getOrderNoteListWithOrderTakingID:lastOrderTaking.orderTakingID];
+                [OrderNote removeList:orderNoteList];
+            }
+            
+            
+            [tbvOrder reloadData];
+            [tbvTotal reloadData];
+            [self blinkRemovedNotiView];
+        }
+        else if(quantity > currentOrderTakingCount)
+        {
+            //add ordertaking
+//            NSInteger menuID = cell.lblMenuName.tag;
+            Menu *menu = [Menu getMenu:menuID branchID:branch.branchID];
+            SpecialPriceProgram *specialPriceProgram = [SpecialPriceProgram getSpecialPriceProgramTodayWithMenuID:menuID branchID:branch.branchID];
+            float specialPrice = specialPriceProgram?specialPriceProgram.specialPrice:menu.price;
+            NSMutableArray *currentOrderTakingList = [OrderTaking getCurrentOrderTakingList];
+            
+            
+            for(int i=0; i<quantity-currentOrderTakingCount; i++)
+            {
+                OrderTaking *orderTaking = [[OrderTaking alloc]initWithBranchID:branch.branchID customerTableID:customerTable.customerTableID menuID:menuID quantity:1 specialPrice:specialPrice price:menu.price takeAway:0 takeAwayPrice:0 noteIDListInText:@"" notePrice:0 orderNo:0 status:1 receiptID:0];
+                [OrderTaking addObject:orderTaking];
+                [currentOrderTakingList addObject:orderTaking];
+            }
+            
+            [tbvOrder reloadData];
+            [tbvTotal reloadData];
+            [self blinkAddedNotiView];
+        }
     }
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+
+    if(textField.tag != 0)
+    {
+        NSString *resultingString = [textField.text stringByReplacingCharactersInRange: range withString: string];
+        
+        // The user deleting all input is perfectly acceptable.
+        if ([resultingString length] == 0) {
+            return true;
+        }
+        
+        NSInteger holder;
+        
+        NSScanner *scan = [NSScanner scannerWithString: resultingString];
+        
+        
+        
+        //fix length
+        NSUInteger oldLength = [textField.text length];
+        NSUInteger replacementLength = [string length];
+        NSUInteger rangeLength = range.length;
+        
+        NSUInteger newLength = oldLength - rangeLength + replacementLength;
+        
+        BOOL returnKey = [string rangeOfString: @"\n"].location != NSNotFound;
+        //**********
+        
+        
+        
+        return [scan scanInteger: &holder] && [scan isAtEnd] && (newLength <= 2 || returnKey);
+    }
+    return YES;
 }
 
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -155,7 +181,8 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
     {
         CreditCardAndOrderSummaryViewController *vc = segue.destinationViewController;
         vc.branch = branch;
-        vc.customerTable = customerTable;        
+        vc.customerTable = customerTable;
+        vc.buffetReceipt = buffetReceipt;
     }
 }
 
@@ -200,7 +227,7 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
     
     
     
-    NSString *title = [Setting getValue:@"075t" example:@"สรุปรายการที่สั่ง"];
+    NSString *title = [Language getText:@"สรุปรายการที่สั่ง"];
     lblNavTitle.text = title;
     tbvOrder.delegate = self;
     tbvOrder.dataSource = self;
@@ -225,10 +252,6 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
     {
         UINib *nib = [UINib nibWithNibName:reuseIdentifierHeaderFooterButton bundle:nil];
         [tbvTotal registerNib:nib forHeaderFooterViewReuseIdentifier:reuseIdentifierHeaderFooterButton];
-    }
-    {
-        UINib *nib = [UINib nibWithNibName:reuseIdentifierVoucherCode bundle:nil];
-        [tbvTotal registerNib:nib forCellReuseIdentifier:reuseIdentifierVoucherCode];
     }
     
     
@@ -289,19 +312,28 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
         
         
         
+        
+        //menu
         Menu *menu = _menuList[item];
         cell.lblMenuName.text = menu.titleThai;
         cell.lblMenuName.tag = menu.menuID;
+        [cell.lblMenuName sizeToFit];
+        cell.lblMenuNameHeight.constant = cell.lblMenuName.frame.size.height<21.5?21.5:cell.lblMenuName.frame.size.height;
         
         
+        //quantity
         NSMutableArray *currentOrderTakingList = [OrderTaking getCurrentOrderTakingList];
         NSMutableArray *orderTakingList = [OrderTaking getOrderTakingListWithMenuID:menu.menuID orderTakingList:currentOrderTakingList];
         float sumQuantity = [OrderTaking getSumQuantity:orderTakingList];
         NSString *strSumQuantity = [Utility formatDecimal:sumQuantity withMinFraction:0 andMaxFraction:0];
-        cell.lblQuantity.text = strSumQuantity;
+        cell.txtQuantity.text = strSumQuantity;
+        cell.txtQuantity.tag = menu.menuID;
+        cell.txtQuantity.delegate = self;
+        cell.txtQuantity.keyboardType = UIKeyboardTypeNumberPad;
+        [cell.txtQuantity setInputAccessoryView:self.toolBar];
         
         
-        
+        //total
         float totalPrice = [OrderTaking getSumSpecialPrice:orderTakingList];
         NSString *strTotalPrice = [Utility formatDecimal:totalPrice withMinFraction:2 andMaxFraction:2];
         cell.lblTotalPrice.text = strTotalPrice;
@@ -327,6 +359,8 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
         }
         cell.imgMenuPic.contentMode = UIViewContentModeScaleAspectFit;
         [self setImageDesign:cell.imgMenuPic];
+        
+
         
         
         cell.tbvNote.tag = menu.menuID;
@@ -359,6 +393,12 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
         [cell.btnDeleteQuantity addTarget:self action:@selector(stepperValueChanged:) forControlEvents:UIControlEventTouchUpInside];
         [cell.btnAddQuantity addTarget:self action:@selector(stepperValueChanged:) forControlEvents:UIControlEventTouchUpInside];
         
+        
+        
+        //expand collapse position
+        cell.imgExpandCollapseTrailing.constant =  self.view.frame.size.width - (cell.btnAddQuantity.frame.origin.x+cell.btnAddQuantity.frame.size.width+(self.view.frame.size.width-16-cell.lblTotalPrice.frame.size.width))/2-16;
+        
+        
         return cell;
     }
     else if([tableView isEqual:tbvTotal])
@@ -372,7 +412,8 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
                 
                 
-                NSString *strTitle = [NSString stringWithFormat:@"%ld รายการ",[_orderTakingList count]];
+                NSString *message = [Language getText:@"%ld รายการ"];
+                NSString *strTitle = [NSString stringWithFormat:message,[_orderTakingList count]];
                 NSString *strTotal = [Utility formatDecimal:[OrderTaking getSumSpecialPrice:_orderTakingList] withMinFraction:2 andMaxFraction:2];
                 strTotal = [Utility addPrefixBahtSymbol:strTotal];
                 cell.lblTitle.text = strTitle;
@@ -396,8 +437,8 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
         NSInteger menuID = tableView.tag;
         
         {
-            NSString *message = [Setting getValue:@"119m" example:@"เพิ่มโน้ต"];
-            NSString *message2 = [Setting getValue:@"120m" example:@"จานที่ %ld"];
+            NSString *message = [Language getText:@"เพิ่มโน้ต"];
+            NSString *message2 = [Language getText:@"จานที่ %ld"];
             CustomTableViewCellNote *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifierNote];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
@@ -425,7 +466,7 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
                 {
                     UIFont *font = [UIFont fontWithName:@"Prompt-Regular" size:11];
                     NSDictionary *attribute = @{NSUnderlineStyleAttributeName: @(NSUnderlineStyleSingle),NSFontAttributeName: font};
-                    attrStringRemove = [[NSMutableAttributedString alloc] initWithString:@"ไม่ใส่" attributes:attribute];
+                    attrStringRemove = [[NSMutableAttributedString alloc] initWithString:[Language getText:@"ไม่ใส่"] attributes:attribute];
                     
                     
                     UIFont *font2 = [UIFont fontWithName:@"Prompt-Regular" size:11];
@@ -439,7 +480,7 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
                 {
                     UIFont *font = [UIFont fontWithName:@"Prompt-Regular" size:11];
                     NSDictionary *attribute = @{NSUnderlineStyleAttributeName: @(NSUnderlineStyleSingle),NSFontAttributeName: font};
-                    attrStringAdd = [[NSMutableAttributedString alloc] initWithString:@"เพิ่ม" attributes:attribute];
+                    attrStringAdd = [[NSMutableAttributedString alloc] initWithString:[Language getText:@"เพิ่ม"] attributes:attribute];
                     
                     
                     UIFont *font2 = [UIFont fontWithName:@"Prompt-Regular" size:11];
@@ -534,33 +575,14 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
     
     if([tableView isEqual:tbvOrder])
     {
+        CustomTableViewCellOrder *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifierOrder];
+        
+      
         Menu *menu = _menuList[item];
-        
-        
-        
-        NSString *strMenuName;
-//        if(orderTaking.takeAway)
-//        {
-//            strMenuName = [NSString stringWithFormat:@"ใส่ห่อ %@",menu.titleThai];
-//        }
-//        else
-        {
-            strMenuName = menu.titleThai;
-        }
-        
-        
-        
-        
-        UIFont *fontMenuName = [UIFont fontWithName:@"Prompt-Regular" size:14.0];
-        CGSize menuNameLabelSize = [self suggestedSizeWithFont:fontMenuName size:CGSizeMake(tbvOrder.frame.size.width - 70 - 68 - 8*2 - 16*2, CGFLOAT_MAX) lineBreakMode:NSLineBreakByWordWrapping forString:strMenuName];
-        
+        cell.lblMenuName.text = menu.titleThai;
+        [cell.lblMenuName sizeToFit];
+        float height = 58.5+cell.lblMenuName.frame.size.height+8<88?88:58.5+cell.lblMenuName.frame.size.height+8;
 
-        
-        
-        float height = menuNameLabelSize.height+11;
-        height = height < 90? 90:height;
-        
-        
         
         NSMutableArray *currentOrderTakingList = [OrderTaking getCurrentOrderTakingList];
         NSMutableArray *orderTakingList = [OrderTaking getOrderTakingListWithMenuID:menu.menuID orderTakingList:currentOrderTakingList];
@@ -573,7 +595,6 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
     else if([tableView isEqual:tbvTotal])
     {
         return 34;
-//        return item == 1?56:26;
     }
     else
     {
@@ -600,7 +621,7 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
         Menu *menu = _menuList[item];
         if(!menu.expand)
         {
-            NSString *message = [Setting getValue:@"118m" example:@"กดค้างที่ช่อง \"เพิ่มโน้ต\" เพื่อแสดงเมนูแก้ไขโน้ต"];
+            NSString *message = [Language getText:@"กดค้างที่ช่อง \"เพิ่มโน้ต\" เพื่อแสดงเมนูแก้ไขโน้ต"];
             [self blinkAlertMsg:message];
         }
         menu.expand = !menu.expand;
@@ -619,7 +640,8 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
         CustomTableViewHeaderFooterButton *footerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:reuseIdentifierHeaderFooterButton];
         
         
-        [footerView.btnValue setTitle:@"ยืนยันการสั่งอาหาร" forState:UIControlStateNormal];
+        NSString *message = [Language getText:@"ยืนยันการสั่งอาหาร"];
+        [footerView.btnValue setTitle:message forState:UIControlStateNormal];
         [footerView.btnValue addTarget:self action:@selector(checkOut:) forControlEvents:UIControlEventTouchUpInside];
         
         
@@ -650,7 +672,7 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:nil
                                                                    message:nil                                                            preferredStyle:UIAlertControllerStyleActionSheet];
     
-    UIAlertAction *action1 = [UIAlertAction actionWithTitle:@"ลบทั้งหมด"
+    UIAlertAction *action1 = [UIAlertAction actionWithTitle:[Language getText:@"ลบทั้งหมด"]
                                                       style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action)
                               {
                                   [OrderTaking removeCurrentOrderTakingList];
@@ -661,7 +683,7 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
     
     [alert addAction:action1];
     
-    UIAlertAction *action2 = [UIAlertAction actionWithTitle:@"ยกเลิก"
+    UIAlertAction *action2 = [UIAlertAction actionWithTitle:[Language getText:@"ยกเลิก"]
                                                       style:UIAlertActionStyleCancel handler:^(UIAlertAction *action)
                               {
                                   
@@ -686,7 +708,7 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
     UIFont *font = [UIFont fontWithName:@"Prompt-SemiBold" size:15];
     UIColor *color = cSystem1;
     NSDictionary *attribute = @{NSForegroundColorAttributeName:color ,NSFontAttributeName: font};
-    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:@"ลบทั้งหมด" attributes:attribute];
+    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:[Language getText:@"ลบทั้งหมด"] attributes:attribute];
     
     UILabel *label = [[action1 valueForKey:@"__representer"] valueForKey:@"label"];
     label.attributedText = attrString;
@@ -696,7 +718,7 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
     UIFont *font2 = [UIFont fontWithName:@"Prompt-SemiBold" size:15];
     UIColor *color2 = cSystem4;
     NSDictionary *attribute2 = @{NSForegroundColorAttributeName:color2 ,NSFontAttributeName: font2};
-    NSMutableAttributedString *attrString2 = [[NSMutableAttributedString alloc] initWithString:@"ยกเลิก" attributes:attribute2];
+    NSMutableAttributedString *attrString2 = [[NSMutableAttributedString alloc] initWithString:[Language getText:@"ลบทั้งหมด"] attributes:attribute2];
     
     UILabel *label2 = [[action2 valueForKey:@"__representer"] valueForKey:@"label"];
     label2.attributedText = attrString2;
@@ -711,8 +733,8 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
     CustomTableViewCellOrder *cell = [tbvOrder cellForRowAtIndexPath:indexPath];
     if(button.tag == 201)
     {
-        NSInteger quantity = [cell.lblQuantity.text integerValue]-1;
-        cell.lblQuantity.text = [Utility formatDecimal:quantity withMinFraction:0 andMaxFraction:0];
+        NSInteger quantity = [cell.txtQuantity.text integerValue]-1;
+        cell.txtQuantity.text = [Utility formatDecimal:quantity withMinFraction:0 andMaxFraction:0];
         
         
         //remove ordertaking
@@ -736,8 +758,12 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
     }
     else if(button.tag == 202)
     {
-        NSInteger quantity = [cell.lblQuantity.text integerValue]+1;
-        cell.lblQuantity.text = [Utility formatDecimal:quantity withMinFraction:0 andMaxFraction:0];
+        if([cell.txtQuantity.text integerValue] == 99)
+        {
+            return;
+        }
+        NSInteger quantity = [cell.txtQuantity.text integerValue]+1;
+        cell.txtQuantity.text = [Utility formatDecimal:quantity withMinFraction:0 andMaxFraction:0];
         
         
         //add ordertaking
@@ -748,7 +774,7 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
         
         
         NSMutableArray *currentOrderTakingList = [OrderTaking getCurrentOrderTakingList];
-        OrderTaking *orderTaking = [[OrderTaking alloc]initWithBranchID:branch.branchID customerTableID:customerTable.customerTableID menuID:menuID quantity:1 specialPrice:specialPrice price:menu.price takeAway:0 noteIDListInText:@"" orderNo:0 status:1 receiptID:0];
+        OrderTaking *orderTaking = [[OrderTaking alloc]initWithBranchID:branch.branchID customerTableID:customerTable.customerTableID menuID:menuID quantity:1 specialPrice:specialPrice price:menu.price takeAway:0 takeAwayPrice:0 noteIDListInText:@"" notePrice:0 orderNo:0 status:1 receiptID:0];
         [OrderTaking addObject:orderTaking];
         [currentOrderTakingList addObject:orderTaking];
 
@@ -759,7 +785,6 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
         [tbvTotal reloadData];
         [self blinkAddedNotiView];
     }
-
 }
 
 -(void)deleteNote:(id)sender
@@ -783,16 +808,12 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
     
     
     
-    float takeAwayFee = orderTaking.takeAway?branch.takeAwayFee:0;
-    SpecialPriceProgram *specialPriceProgram = [SpecialPriceProgram getSpecialPriceProgramTodayWithMenuID:menu.menuID branchID:branch.branchID];
-    float specialPrice = specialPriceProgram?specialPriceProgram.specialPrice:menu.price;
-    float sumNotePrice = [OrderNote getSumNotePriceWithOrderTakingID:orderTaking.orderTakingID];
-    orderTaking.price = menu.price+sumNotePrice+takeAwayFee;
-    orderTaking.specialPrice = specialPrice+sumNotePrice+takeAwayFee;
+    orderTaking.notePrice = 0;
     orderTaking.modifiedUser = [Utility modifiedUser];
     orderTaking.modifiedDate = [Utility currentDateTime];
     
     [tbvOrder reloadData];
+    [tbvTotal reloadData];
 }
 
 - (void)deleteNoteTouchDown:(id)sender
@@ -822,7 +843,7 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:nil
                                                                    message:nil                                                            preferredStyle:UIAlertControllerStyleActionSheet];
     
-    UIAlertAction *action1 = [UIAlertAction actionWithTitle:@"คัดลอก"
+    UIAlertAction *action1 = [UIAlertAction actionWithTitle:[Language getText:@"คัดลอก"]
                                                       style:UIAlertActionStyleDefault handler:^(UIAlertAction *action)
                               {
                                   Menu *menu = _menuList[tappedIP.item];
@@ -840,7 +861,7 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
                                   UIFont *font = [UIFont fontWithName:@"Prompt-SemiBold" size:15];
                                   UIColor *color = cSystem1;
                                   NSDictionary *attribute = @{NSForegroundColorAttributeName:color ,NSFontAttributeName: font};
-                                  NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:@"คัดลอก" attributes:attribute];
+                                  NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:[Language getText:@"คัดลอก"] attributes:attribute];
                                   
                                   UILabel *label = [[action1 valueForKey:@"__representer"] valueForKey:@"label"];
                                   label.attributedText = attrString;
@@ -848,7 +869,7 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
     [alert addAction:action1];
     
     
-    NSString *message4 = [Setting getValue:@"112m" example:@"วางทั้งหมด"];
+    NSString *message4 = [Language getText:@"วางทั้งหมด"];
     UIAlertAction *action4 = [UIAlertAction actionWithTitle:message4
                                                       style:UIAlertActionStyleDefault handler:^(UIAlertAction *action)
                               {
@@ -877,32 +898,24 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
                                           }
                                           
                                           
-                                          
-                                          
                                           //update note id list in text
                                           orderTaking.noteIDListInText = [OrderNote getNoteIDListInTextWithOrderTakingID:orderTaking.orderTakingID];
                                           
                                           
                                           //update ordertaking price
-                                          float takeAwayFee = orderTaking.takeAway?[[Setting getSettingValueWithKeyName:@"takeAwayFee"] floatValue]:0;
-                                          SpecialPriceProgram *specialPriceProgram = [SpecialPriceProgram getSpecialPriceProgramTodayWithMenuID:menu.menuID branchID:branch.branchID];
-                                          float specialPrice = specialPriceProgram?specialPriceProgram.specialPrice:menu.price;
                                           float sumNotePrice = [OrderNote getSumNotePriceWithOrderTakingID:orderTaking.orderTakingID];
-                                          orderTaking.price = menu.price+sumNotePrice+takeAwayFee;
-                                          orderTaking.specialPrice = specialPrice+sumNotePrice+takeAwayFee;
+                                          orderTaking.notePrice = sumNotePrice;
                                           orderTaking.modifiedUser = [Utility modifiedUser];
                                           orderTaking.modifiedDate = [Utility currentDateTime];
                                       }
                                   }
                                   
                                   [tbvOrder reloadData];
-                                  
-                                  
                               }];
     [alert addAction:action4];
     
     
-    NSString *message5 = [Setting getValue:@"113m" example:@"Take away ทั้งหมด"];
+    NSString *message5 = [Language getText:@"Take away ทั้งหมด"];
     UIAlertAction *action5 = [UIAlertAction actionWithTitle:message5
                                                       style:UIAlertActionStyleDefault handler:^(UIAlertAction *action)
                               {
@@ -915,25 +928,20 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
                                   {
                                       orderTaking.takeAway = orderTaking.takeAway;
                                       float takeAwayFee = orderTaking.takeAway?branch.takeAwayFee:0;
-                                      SpecialPriceProgram *specialPriceProgram = [SpecialPriceProgram getSpecialPriceProgramTodayWithMenuID:menu.menuID branchID:branch.branchID];
-                                      float specialPrice = specialPriceProgram?specialPriceProgram.specialPrice:menu.price;
-                                      float sumNotePrice = [OrderNote getSumNotePriceWithOrderTakingID:orderTaking.orderTakingID];
-                                      orderTaking.price = menu.price+sumNotePrice+takeAwayFee;
-                                      orderTaking.specialPrice = specialPrice+sumNotePrice+takeAwayFee;
+                                      orderTaking.takeAwayPrice = takeAwayFee;
                                       orderTaking.modifiedUser = [Utility modifiedUser];
                                       orderTaking.modifiedDate = [Utility currentDateTime];
                             
                                   }
+                                  
                                   [tbvOrder reloadData];
                                   [tbvTotal reloadData];
-                                  
-                                  
                               }];
     [alert addAction:action5];
     
     
     
-    UIAlertAction *action2 = [UIAlertAction actionWithTitle:@"ยกเลิก"
+    UIAlertAction *action2 = [UIAlertAction actionWithTitle:[Language getText:@"ยกเลิก"]
                                                       style:UIAlertActionStyleCancel handler:^(UIAlertAction *action)
                               {
                               }];
@@ -947,7 +955,6 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
                                                        handler:^(UIAlertAction *action)
                                  {
                                  }];
-//    [action3 setValue:cSystem4 forKey:@"titleTextColor"];
     [alert addAction:action3];
     
     
@@ -970,7 +977,7 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
     UIFont *font = [UIFont fontWithName:@"Prompt-SemiBold" size:15];
     UIColor *color = cSystem1;
     NSDictionary *attribute = @{NSForegroundColorAttributeName:color ,NSFontAttributeName: font};
-    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:@"คัดลอก" attributes:attribute];
+    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:[Language getText:@"คัดลอก"] attributes:attribute];
     
     UILabel *label = [[action1 valueForKey:@"__representer"] valueForKey:@"label"];
     label.attributedText = attrString;
@@ -1000,7 +1007,7 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
     UIFont *font2 = [UIFont fontWithName:@"Prompt-SemiBold" size:15];
     UIColor *color2 = cSystem4;
     NSDictionary *attribute2 = @{NSForegroundColorAttributeName:color2 ,NSFontAttributeName: font2};
-    NSMutableAttributedString *attrString2 = [[NSMutableAttributedString alloc] initWithString:@"ยกเลิก" attributes:attribute2];
+    NSMutableAttributedString *attrString2 = [[NSMutableAttributedString alloc] initWithString:[Language getText:@"ยกเลิก"] attributes:attribute2];
     
     UILabel *label2 = [[action2 valueForKey:@"__representer"] valueForKey:@"label"];
     label2.attributedText = attrString2;
@@ -1054,19 +1061,13 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
         }
         
         
-        
-        
         //update note id list in text
         orderTaking.noteIDListInText = [OrderNote getNoteIDListInTextWithOrderTakingID:orderTaking.orderTakingID];
         
         
         //update ordertaking price
-        float takeAwayFee = orderTaking.takeAway?[[Setting getSettingValueWithKeyName:@"takeAwayFee"] floatValue]:0;
-        SpecialPriceProgram *specialPriceProgram = [SpecialPriceProgram getSpecialPriceProgramTodayWithMenuID:menu.menuID branchID:branch.branchID];
-        float specialPrice = specialPriceProgram?specialPriceProgram.specialPrice:menu.price;
         float sumNotePrice = [OrderNote getSumNotePriceWithOrderTakingID:orderTaking.orderTakingID];
-        orderTaking.price = menu.price+sumNotePrice+takeAwayFee;
-        orderTaking.specialPrice = specialPrice+sumNotePrice+takeAwayFee;
+        orderTaking.notePrice = sumNotePrice;
         orderTaking.modifiedUser = [Utility modifiedUser];
         orderTaking.modifiedDate = [Utility currentDateTime];
         
@@ -1092,11 +1093,7 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
     }
 
     
-    
-//    if([_copyOrderTaking isEqual:_orderTaking])
-//    {
-//        _copyOrderTaking = nil;
-//    }
+
     [self performSegueWithIdentifier:@"segNote" sender:self];
 }
 
@@ -1121,14 +1118,9 @@ static NSString * const reuseIdentifierVoucherCode = @"CustomTableViewCellVouche
     
     
     
-    
     orderTaking.takeAway = !orderTaking.takeAway;
     float takeAwayFee = orderTaking.takeAway?branch.takeAwayFee:0;
-    SpecialPriceProgram *specialPriceProgram = [SpecialPriceProgram getSpecialPriceProgramTodayWithMenuID:menu.menuID branchID:branch.branchID];
-    float specialPrice = specialPriceProgram?specialPriceProgram.specialPrice:menu.price;
-    float sumNotePrice = [OrderNote getSumNotePriceWithOrderTakingID:orderTaking.orderTakingID];
-    orderTaking.price = menu.price+sumNotePrice+takeAwayFee;
-    orderTaking.specialPrice = specialPrice+sumNotePrice+takeAwayFee;
+    orderTaking.takeAwayPrice = takeAwayFee;
     orderTaking.modifiedUser = [Utility modifiedUser];
     orderTaking.modifiedDate = [Utility currentDateTime];
 

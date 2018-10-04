@@ -34,6 +34,7 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
 @synthesize rewardRedemption;
 @synthesize topViewHeight;
 @synthesize bottomButtonHeight;
+@synthesize btnRedeem;
 
 
 -(IBAction)unwindToRewardDetail:(UIStoryboardSegue *)segue
@@ -49,6 +50,9 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
     
     float topPadding = window.safeAreaInsets.top;
     topViewHeight.constant = topPadding == 0?20:topPadding;
+    
+    
+    [btnRedeem setTitle:[Language getText:@"รับสิทธิ์"] forState:UIControlStateNormal];
 }
 
 - (void)viewDidLoad
@@ -57,12 +61,12 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
     // Do any additional setup after loading the view.
     
     
-    NSString *title = [Setting getValue:@"070t" example:@"แลกของรางวัล"];
+    NSString *title = [Language getText:@"แลกของรางวัล"];
     lblNavTitle.text = title;
     _expandCollapse = 1;
     tbvData.delegate = self;
     tbvData.dataSource = self;
-    
+    tbvData.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
     
     {
@@ -107,7 +111,6 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
          {
              if (succeeded)
              {
-                 NSLog(@"succeed");
                  cell.imgVwValue.image = image;
              }
          }];
@@ -132,6 +135,11 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
         cell.lblRemarkWidth.constant = cell.lblRemark.frame.size.width;
         
         
+        cell.btnOrderNow.hidden = YES;
+        cell.btnOrderNowTop.constant = 0;
+        cell.btnOrderNowHeight.constant = 0;
+        
+        
         return cell;
     }
     else if(item == 1)
@@ -140,6 +148,7 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
         
+        cell.lblTitle.text = [Language getText:@"ข้อกำหนด และเงื่อนไข"];
         cell.lblTextLabel.text = rewardRedemption.termsConditions;
         [cell.lblTextLabel sizeToFit];        
         cell.lblTextLabelHeight.constant = _expandCollapse?cell.lblTextLabel.frame.size.height:0;
@@ -169,7 +178,6 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
          {
              if (succeeded)
              {
-                 NSLog(@"succeed");
                  cell.imgVwValue.image = image;                 
              }
          }];
@@ -188,6 +196,9 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
         cell.lblSubTitleHeight.constant = cell.lblSubTitle.frame.size.height;
         
         
+        cell.btnOrderNow.hidden = YES;
+        cell.btnOrderNowTop.constant = 0;
+        cell.btnOrderNowHeight.constant = 0;
         
        
         return 11+cell.imgVwValueHeight.constant+20+cell.lblHeaderHeight.constant+8+cell.lblSubTitleHeight.constant+8+18+11;
@@ -197,6 +208,7 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
         CustomTableViewCellLabel *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifierLabel];
         
         
+        cell.lblTitle.text = [Language getText:@"ข้อกำหนด และเงื่อนไข"];
         cell.lblTextLabel.text = rewardRedemption.termsConditions;
         [cell.lblTextLabel sizeToFit];
         cell.lblTextLabelHeight.constant = cell.lblTextLabel.frame.size.height;
@@ -238,13 +250,14 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
     
 
     
-    
-    UIAlertAction *action1 = [UIAlertAction actionWithTitle:@"ยืนยันการรับสิทธิ์"
+    NSString *title = [Language getText:@"ยืนยันการรับสิทธิ์"];
+    UIAlertAction *action1 = [UIAlertAction actionWithTitle:title
                                                      style:UIAlertActionStyleDefault handler:^(UIAlertAction *action)
                              {
+                                 NSString *message = [Language getText:@"จำนวนแต้มสะสมไม่เพียงพอ"];
                                  if(rewardPoint.point < rewardRedemption.point)
                                  {
-                                     [self showAlert:@"" message:@"จำนวนแต้มสะสมไม่เพียงพอ"];
+                                     [self showAlert:@"" message:message];
                                  }
                                  else
                                  {
@@ -258,8 +271,8 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
     [alert addAction:action1];
     
     
-    
-    UIAlertAction *action2 = [UIAlertAction actionWithTitle:@"ยกเลิก"
+    NSString *title2 = [Language getText:@"ยกเลิก"];
+    UIAlertAction *action2 = [UIAlertAction actionWithTitle:title2
                                                       style:UIAlertActionStyleCancel handler:^(UIAlertAction *action)
                               {
                               }];
@@ -282,7 +295,7 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
     UIFont *font = [UIFont fontWithName:@"Prompt-SemiBold" size:15];
     UIColor *color = cSystem1;
     NSDictionary *attribute = @{NSForegroundColorAttributeName:color ,NSFontAttributeName: font};
-    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:@"ยืนยันการรับสิทธิ์" attributes:attribute];
+    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:title attributes:attribute];
 
     UILabel *label = [[action1 valueForKey:@"__representer"] valueForKey:@"label"];
     label.attributedText = attrString;
@@ -292,7 +305,7 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
     UIFont *font2 = [UIFont fontWithName:@"Prompt-SemiBold" size:15];
     UIColor *color2 = cSystem4;
     NSDictionary *attribute2 = @{NSForegroundColorAttributeName:color2 ,NSFontAttributeName: font2};
-    NSMutableAttributedString *attrString2 = [[NSMutableAttributedString alloc] initWithString:@"ยกเลิก" attributes:attribute2];
+    NSMutableAttributedString *attrString2 = [[NSMutableAttributedString alloc] initWithString:title2 attributes:attribute2];
 
     UILabel *label2 = [[action2 valueForKey:@"__representer"] valueForKey:@"label"];
     label2.attributedText = attrString2;
@@ -315,7 +328,7 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
     }
     else
     {
-        NSString *message = [Setting getValue:@"039m" example:@"จำนวนสิทธิ์ครบแล้ว"];
+        NSString *message = [Language getText:@"จำนวนสิทธิ์ครบแล้ว"];
         [self showAlert:@"" message:message];
     }
 }

@@ -7,10 +7,16 @@
 //
 
 #import "RewardRedemptionViewController.h"
+#import "CreditCardAndOrderSummaryViewController.h"
 #import "CustomTableViewCellRedemption.h"
 #import "CustomTableViewCellLabel.h"
 #import "CustomTableViewCellLabelDetailLabelWithImage.h"
 #import "Setting.h"
+#import "OrderTaking.h"
+#import "Menu.h"
+#import "SpecialPriceProgram.h"
+#import "Message.h"
+#import "DiscountGroupMenuMap.h"
 
 
 @interface RewardRedemptionViewController ()
@@ -41,6 +47,11 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
 @synthesize bottomLabelHeight;
 
 
+-(IBAction)unwindToRewardRedemption:(UIStoryboardSegue *)segue
+{
+    
+}
+
 -(void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
@@ -57,11 +68,11 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
     // Do any additional setup after loading the view.
     
     
-    NSString *title = [Setting getValue:@"071t" example:@"แสดงโค้ด เพื่อรับสิทธิ์"];
+    NSString *title = [Language getText:@"แสดงโค้ด เพื่อรับสิทธิ์"];
     lblNavTitle.text = title;
     tbvData.delegate = self;
     tbvData.dataSource = self;
-    
+    tbvData.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
     
     {
@@ -80,7 +91,7 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
     
     if(rewardRedemption.withInPeriod == 0)
     {
-        NSString *message = [Setting getValue:@"043m" example:@"ใช้ได้ 1 ครั้ง ภายใน %@"];
+        NSString *message = [Language getText:@"ใช้ได้ 1 ครั้ง ภายใน %@"];
         lblCountDown.text = [NSString stringWithFormat:message,[Utility dateToString:rewardRedemption.usingEndDate toFormat:@"d MMM yyyy"]];
     }
     else
@@ -118,7 +129,7 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
         CustomTableViewCellLabelDetailLabelWithImage *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifierLabelDetailLabelWithImage];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
-        cell.lblText.text = @"แต้มคงเหลือ";
+        cell.lblText.text = [Language getText:@"แต้มคงเหลือ"];
         cell.lblText.font = [UIFont fontWithName:@"Prompt-SemiBold" size:15.0f];
         NSInteger point = floor(rewardPoint.point);
         NSString *strPoint = [Utility formatDecimal:point];
@@ -158,8 +169,17 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
         _promoCode = promoCode.code;
         
         
-        
-        [cell.btnCopy addTarget:self action:@selector(copyQRCode:) forControlEvents:UIControlEventTouchUpInside];
+        if(rewardRedemption.discountGroupMenuID)
+        {
+            cell.btnCopy.hidden = NO;
+            [cell.btnCopy setTitle:[Language getText:@"สั่งเลย"] forState:UIControlStateNormal];
+            [cell.btnCopy removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
+            [cell.btnCopy addTarget:self action:@selector(goToCreditAndOrderSummary:) forControlEvents:UIControlEventTouchUpInside];
+        }
+        else
+        {
+            cell.btnCopy.hidden = YES;
+        }
         
         
         return cell;
@@ -170,6 +190,7 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
         
+        cell.lblTitle.text = [Language getText:@"ข้อกำหนด และเงื่อนไข"];
         cell.lblTextLabel.text = rewardRedemption.termsConditions;
         [cell.lblTextLabel sizeToFit];
         cell.lblTextLabelHeight.constant = _expandCollapse?cell.lblTextLabel.frame.size.height:0;
@@ -218,6 +239,7 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
         CustomTableViewCellLabel *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifierLabel];
         
         
+        cell.lblTitle.text = [Language getText:@"ข้อกำหนด และเงื่อนไข"];
         cell.lblTextLabel.text = rewardRedemption.termsConditions;
         [cell.lblTextLabel sizeToFit];
         cell.lblTextLabelHeight.constant = cell.lblTextLabel.frame.size.height;
@@ -287,4 +309,66 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     pasteboard.string = _promoCode;
 }
+
+-(void)goToCreditAndOrderSummary:(id)sender
+{
+    self.homeModel = [[HomeModel alloc]init];
+    self.homeModel.delegate = self;
+    [self.homeModel downloadItems:dbMenu withData:@[@(rewardRedemption.mainBranchID), @(rewardRedemption.discountGroupMenuID)]];
+}
+
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if([[segue identifier] isEqualToString:@"segCreditCardAndOrderSummary"])
+    {
+        Branch *branch = [Branch getBranch:rewardRedemption.mainBranchID];
+        rewardRedemption.voucherCode = promoCode.code;
+        CreditCardAndOrderSummaryViewController *vc = segue.destinationViewController;
+        vc.branch = branch;
+        vc.customerTable = nil;
+        vc.fromRewardRedemption = 1;
+        vc.receipt = nil;
+        vc.buffetReceipt = nil;
+        vc.rewardRedemption = rewardRedemption;
+    }
+}
+
+-(void)itemsDownloaded:(NSArray *)items manager:(NSObject *)objHomeModel
+{
+    HomeModel *homeModel = (HomeModel *)objHomeModel;
+    if(homeModel.propCurrentDB == dbMenu)
+    {
+        [Utility updateSharedObject:items];
+        NSMutableArray *messageList = [items[0] mutableCopy];
+        Message *message = messageList[0];
+        if(![message.text integerValue])
+        {
+            NSString *message = [Language getText:@"ทางร้านไม่ได้เปิดระบบการสั่งอาหารด้วยตนเองตอนนี้ ขออภัยในความไม่สะดวกค่ะ"];
+            [self showAlert:@"" message:message];
+        }
+        else
+        {
+            NSMutableArray *discountGroupMenuMapList = items[6];
+            NSMutableArray *orderTakingList = [[NSMutableArray alloc]init];
+            for(int i=0; i<[discountGroupMenuMapList count]; i++)
+            {
+                DiscountGroupMenuMap *discountGroupMenuMap = discountGroupMenuMapList[i];
+                Menu *menu = [Menu getMenu:discountGroupMenuMap.menuID branchID:rewardRedemption.mainBranchID];
+                SpecialPriceProgram *specialPriceProgram = [SpecialPriceProgram getSpecialPriceProgramTodayWithMenuID:discountGroupMenuMap.menuID branchID:rewardRedemption.mainBranchID];
+                float specialPrice = specialPriceProgram?specialPriceProgram.specialPrice:menu.price;
+                
+                
+                for(int j=0; j<discountGroupMenuMap.quantity; j++)
+                {
+                    OrderTaking *orderTaking = [[OrderTaking alloc]initWithBranchID:rewardRedemption.mainBranchID customerTableID:0 menuID:discountGroupMenuMap.menuID quantity:1 specialPrice:specialPrice price:menu.price takeAway:0 takeAwayPrice:0 noteIDListInText:@"" notePrice:0 orderNo:0 status:1 receiptID:0];
+                    [orderTakingList addObject:orderTaking];
+                }
+            }
+            
+            [OrderTaking setCurrentOrderTakingList:orderTakingList];
+            [self performSegueWithIdentifier:@"segCreditCardAndOrderSummary" sender:self];
+        }
+    }
+}
+
 @end
