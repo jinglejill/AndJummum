@@ -1703,6 +1703,7 @@
                 {
                     NSLog(@"%@",[token tokenId]);
                     
+                    //test
 //                    btnPay.enabled = YES;
 //                    [self removeWaitingView];
 //                    return;
