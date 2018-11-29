@@ -34,7 +34,8 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
 @synthesize tbvData;
 @synthesize promotion;
 @synthesize topViewHeight;
-
+@synthesize goToMenuSelection;
+@synthesize branch;
 
 -(IBAction)unwindToHotDealDetail:(UIStoryboardSegue *)segue
 {
@@ -102,14 +103,30 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
         
-        
-        [self.homeModel downloadImageWithFileName:promotion.imageUrl type:3 branchID:0 completionBlock:^(BOOL succeeded, UIImage *image)
-         {
-             if (succeeded)
+        NSString *strPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+        NSString *noImageFileName = [NSString stringWithFormat:@"%@/JMM/Image/NoImage.jpg",strPath];
+        NSString *imageFileName = [NSString stringWithFormat:@"%@/JMM/Image/Promotion/%@",strPath,promotion.imageUrl];
+        imageFileName = [Utility isStringEmpty:promotion.imageUrl]?noImageFileName:imageFileName;
+        UIImage *image = [Utility getImageFromCache:imageFileName];
+        if(image)
+        {
+            cell.imgVwValue.image = image;
+        }
+        else
+        {
+            [self.homeModel downloadImageWithFileName:promotion.imageUrl type:3 branchID:0 completionBlock:^(BOOL succeeded, UIImage *image)
              {
-                 cell.imgVwValue.image = image;
-             }
-         }];
+                 if (succeeded)
+                 {
+                     [Utility saveImageInCache:image imageName:imageFileName];
+                     cell.imgVwValue.image = image;
+                 }
+             }];
+        }
+        
+        
+        
+        
         float imageWidth = cell.frame.size.width -2*16 > 375?375:cell.frame.size.width -2*16;
         cell.imgVwValueHeight.constant = imageWidth/16*9;
         cell.imgVwValue.contentMode = UIViewContentModeScaleAspectFit;
@@ -133,7 +150,7 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
         cell.lblRemarkHeight.constant = 0;
         
         
-        if(promotion.discountGroupMenuID)
+        if(promotion.mainBranchID)
         {
             cell.btnOrderNow.hidden = NO;
             cell.btnOrderNowTop.constant = 7;
@@ -185,13 +202,29 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
         
         
         
-        [self.homeModel downloadImageWithFileName:promotion.imageUrl type:3 branchID:0 completionBlock:^(BOOL succeeded, UIImage *image)
-         {
-             if (succeeded)
+        NSString *strPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+        NSString *noImageFileName = [NSString stringWithFormat:@"%@/JMM/Image/NoImage.jpg",strPath];
+        NSString *imageFileName = [NSString stringWithFormat:@"%@/JMM/Image/Promotion/%@",strPath,promotion.imageUrl];
+        imageFileName = [Utility isStringEmpty:promotion.imageUrl]?noImageFileName:imageFileName;
+        UIImage *image = [Utility getImageFromCache:imageFileName];
+        if(image)
+        {
+            cell.imgVwValue.image = image;
+        }
+        else
+        {
+            [self.homeModel downloadImageWithFileName:promotion.imageUrl type:3 branchID:0 completionBlock:^(BOOL succeeded, UIImage *image)
              {
-                 cell.imgVwValue.image = image;
-             }
-         }];
+                 if (succeeded)
+                 {
+                     [Utility saveImageInCache:image imageName:imageFileName];
+                     cell.imgVwValue.image = image;
+                 }
+             }];
+        }
+        
+        
+        
         float imageWidth = cell.frame.size.width -2*16 > 375?375:cell.frame.size.width -2*16;
         cell.imgVwValueHeight.constant = imageWidth/16*9;
         
@@ -291,24 +324,34 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
         }
         else
         {
-            NSMutableArray *discountGroupMenuMapList = items[6];
-            NSMutableArray *orderTakingList = [[NSMutableArray alloc]init];
-            for(int i=0; i<[discountGroupMenuMapList count]; i++)
+            NSMutableArray *discountGroupMenuMapList = items[3];
+            if(promotion.discountGroupMenuID && [discountGroupMenuMapList count]>0)
             {
-                DiscountGroupMenuMap *discountGroupMenuMap = discountGroupMenuMapList[i];
-                Menu *menu = [Menu getMenu:discountGroupMenuMap.menuID branchID:promotion.mainBranchID];
-                SpecialPriceProgram *specialPriceProgram = [SpecialPriceProgram getSpecialPriceProgramTodayWithMenuID:discountGroupMenuMap.menuID branchID:promotion.mainBranchID];
-                float specialPrice = specialPriceProgram?specialPriceProgram.specialPrice:menu.price;
-                
-                for(int j=0; j<discountGroupMenuMap.quantity; j++)
+                NSMutableArray *orderTakingList = [[NSMutableArray alloc]init];
+                for(int i=0; i<[discountGroupMenuMapList count]; i++)
                 {
-                    OrderTaking *orderTaking = [[OrderTaking alloc]initWithBranchID:promotion.mainBranchID customerTableID:0 menuID:discountGroupMenuMap.menuID quantity:1 specialPrice:specialPrice price:menu.price takeAway:0 takeAwayPrice:0 noteIDListInText:@"" notePrice:0 orderNo:0 status:1 receiptID:0];
-                    [orderTakingList addObject:orderTaking];
+                    DiscountGroupMenuMap *discountGroupMenuMap = discountGroupMenuMapList[i];
+                    Menu *menu = [Menu getMenu:discountGroupMenuMap.menuID branchID:promotion.mainBranchID];
+                    SpecialPriceProgram *specialPriceProgram = [SpecialPriceProgram getSpecialPriceProgramTodayWithMenuID:discountGroupMenuMap.menuID branchID:promotion.mainBranchID];
+                    float specialPrice = specialPriceProgram?specialPriceProgram.specialPrice:menu.price;
+                    
+                    for(int j=0; j<discountGroupMenuMap.quantity; j++)
+                    {
+                        OrderTaking *orderTaking = [[OrderTaking alloc]initWithBranchID:promotion.mainBranchID customerTableID:0 menuID:discountGroupMenuMap.menuID quantity:1 specialPrice:specialPrice price:menu.price takeAway:0 takeAwayPrice:0 noteIDListInText:@"" notePrice:0 orderNo:0 status:1 receiptID:0];
+                        [orderTakingList addObject:orderTaking];
+                        [OrderTaking addObject:orderTaking];
+                    }
                 }
+                
+                [OrderTaking setCurrentOrderTakingList:orderTakingList];
+                [self performSegueWithIdentifier:@"segCreditCardAndOrderSummary" sender:self];
             }
-            
-            [OrderTaking setCurrentOrderTakingList:orderTakingList];
-            [self performSegueWithIdentifier:@"segCreditCardAndOrderSummary" sender:self];
+            else
+            {
+                goToMenuSelection = 1;
+                branch = [Branch getBranch:promotion.mainBranchID];
+                [self performSegueWithIdentifier:@"segUnwindToMainTabBar" sender:self];
+            }
         }
     }
 }

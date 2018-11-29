@@ -61,7 +61,7 @@ static NSString * const reuseIdentifierHeaderFooterOkCancel = @"CustomTableViewH
 
 -(void)textViewDidBeginEditing:(UITextView *)textView
 {
-    textView.textColor = [UIColor blackColor];
+    textView.textColor = cSystem5;
     if([textView.text isEqualToString:_strPlaceHolder])
     {
         textView.text = @"";
@@ -234,7 +234,7 @@ static NSString * const reuseIdentifierHeaderFooterOkCancel = @"CustomTableViewH
                 cell.backgroundColor = [UIColor whiteColor];
                 
                 
-                NSString *message = [Language getText:@"กรุณากรอกรายละเอียดด้านล่างนี้"];
+                NSString *message = [Language getText:@"กรุณาใส่รายละเอียดด้านล่างนี้"];
                 cell.textLabel.text = message;
                 cell.textLabel.font = [UIFont fontWithName:@"Prompt-Regular" size:15];
                 cell.textLabel.textColor = [UIColor lightGrayColor];
@@ -275,7 +275,7 @@ static NSString * const reuseIdentifierHeaderFooterOkCancel = @"CustomTableViewH
                 cell.txtValue.placeholder = message2;
                 cell.txtValue.delegate = self;
                 cell.txtValue.inputView = pickerVw;
-                [cell.txtValue setInputAccessoryView:self.toolBar];
+                [cell.txtValue setInputAccessoryView:self.toolBarNext];
                 [cell.txtValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
                 
                 
@@ -299,7 +299,7 @@ static NSString * const reuseIdentifierHeaderFooterOkCancel = @"CustomTableViewH
                 
                 
                 UIFont *font = [UIFont fontWithName:@"Prompt-Regular" size:15];
-                UIColor *color = cSystem1;;
+                UIColor *color = cSystem1;
                 NSDictionary *attribute = @{NSForegroundColorAttributeName:color ,NSFontAttributeName: font};
                 NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:@"* " attributes:attribute];
                 
@@ -342,7 +342,7 @@ static NSString * const reuseIdentifierHeaderFooterOkCancel = @"CustomTableViewH
                 cell.backgroundColor = [UIColor whiteColor];
                 
                 
-                NSString *message = [Language getText:@"กรุณากรอกรายละเอียดด้านล่างนี้"];
+                NSString *message = [Language getText:@"กรุณาใส่รายละเอียดด้านล่างนี้"];
                 cell.textLabel.text = message;
                 cell.textLabel.font = [UIFont fontWithName:@"Prompt-Regular" size:15];
                 cell.textLabel.textColor = [UIColor lightGrayColor];
@@ -384,7 +384,7 @@ static NSString * const reuseIdentifierHeaderFooterOkCancel = @"CustomTableViewH
                 cell.txtValue.placeholder = message2;
                 cell.txtValue.delegate = self;
                 cell.txtValue.inputView = pickerVw;
-                [cell.txtValue setInputAccessoryView:self.toolBar];
+                [cell.txtValue setInputAccessoryView:self.toolBarNext];
                 [cell.txtValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
                 
                 
@@ -430,7 +430,7 @@ static NSString * const reuseIdentifierHeaderFooterOkCancel = @"CustomTableViewH
                 cell.txtValue.placeholder = @"THB";
                 cell.txtValue.keyboardType = UIKeyboardTypeDecimalPad;
                 cell.txtValue.text = [Utility formatDecimal:_dispute.refundAmount withMinFraction:0 andMaxFraction:2];
-                [cell.txtValue setInputAccessoryView:self.toolBar];
+                [cell.txtValue setInputAccessoryView:self.toolBarNext];
                 [cell.txtValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
                 if(_dispute.refundAmount == 0)
                 {
@@ -481,7 +481,7 @@ static NSString * const reuseIdentifierHeaderFooterOkCancel = @"CustomTableViewH
                 }
                 else
                 {
-                    cell.txvValue.textColor = [UIColor blackColor];
+                    cell.txvValue.textColor = cSystem5;
                 }
                 [cell.txvValue.layer setBorderColor:[[[UIColor grayColor] colorWithAlphaComponent:0.5] CGColor]];
                 [cell.txvValue.layer setBorderWidth:0.5];
@@ -489,7 +489,7 @@ static NSString * const reuseIdentifierHeaderFooterOkCancel = @"CustomTableViewH
                 //The rounded corner part, where you specify your view's corner radius:
                 cell.txvValue.layer.cornerRadius = 5;
                 cell.txvValue.clipsToBounds = YES;
-                [cell.txvValue setInputAccessoryView:self.toolBar];
+                [cell.txvValue setInputAccessoryView:self.toolBarNext];
                 
                 
                 return cell;
@@ -963,4 +963,33 @@ static NSString * const reuseIdentifierHeaderFooterOkCancel = @"CustomTableViewH
     UITextField *txtPhoneNo = sender;
     txtPhoneNo.text = [Utility formatPhoneNo:[Utility removeDashAndSpaceAndParenthesis:txtPhoneNo.text]];
 }
+
+-(void)goToNextResponder:(id)sender
+{
+    UIView *firstResponder = [self findFirstResponder:self.view];
+    if(firstResponder)
+    {
+        NSInteger tag = firstResponder.tag;
+        if(tag == 1)
+        {
+            if(fromType == 1)
+            {
+                UITextField *textField = [self.view viewWithTag:4];
+                [textField becomeFirstResponder];
+            }
+            else if(fromType == 2)
+            {
+                UITextField *textField = [self.view viewWithTag:2];
+                [textField becomeFirstResponder];
+            }
+        }
+        else
+        {
+            NSInteger nextTag = tag + 1;
+            UITextField *textField = [self.view viewWithTag:nextTag];
+            [textField becomeFirstResponder];
+        }
+    }
+}
+
 @end

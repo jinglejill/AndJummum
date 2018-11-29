@@ -96,9 +96,8 @@ static NSString * const reuseIdentifierSearchBar = @"CustomTableViewCellSearchBa
         [tbvCustomerTable registerNib:nib forCellReuseIdentifier:reuseIdentifierSearchBar];
     }
     
-    
-    [self.homeModel downloadItems:dbCustomerTable withData:branch];
-    
+
+    [self.homeModel downloadItems:dbCustomerTable withData:branch];    
 }
 
 ///tableview section
@@ -270,10 +269,17 @@ static NSString * const reuseIdentifierSearchBar = @"CustomTableViewCellSearchBa
     }
     else
     {
-        NSPredicate *resultPredicate   = [NSPredicate predicateWithFormat:@"(_tableName contains[c] %@)", searchText];
-        _filterCustomerTableList = [[_customerTableList filteredArrayUsingPredicate:resultPredicate] mutableCopy];
-    }
-    
+        NSMutableSet *searchSet = [[NSMutableSet alloc]init];
+        NSArray *arrSearchText = [searchText componentsSeparatedByString:@" "];
+        for(NSString *item in arrSearchText)
+        {
+            NSPredicate *resultPredicate   = [NSPredicate predicateWithFormat:@"(_tableName contains[c] %@)", item];
+            NSArray *filterArray = [[_customerTableList filteredArrayUsingPredicate:resultPredicate] mutableCopy];
+            [searchSet addObjectsFromArray:filterArray];
+        }
+        _filterCustomerTableList = [[searchSet allObjects]mutableCopy];
+
+    }    
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
@@ -443,8 +449,10 @@ static NSString * const reuseIdentifierSearchBar = @"CustomTableViewCellSearchBa
 -(void)setData
 {
     _customerTableList = [CustomerTable getCustomerTableListWithBranchID:branch.branchID];
-    _customerTableList = [CustomerTable getCustomerTableListWithType:1 status:1 customerTableList:_customerTableList];
-    _customerTableZoneList = [CustomerTable getCustomerTableZoneListWithType:1 status:1 customerTableList:_customerTableList];
+//    _customerTableList = [CustomerTable getCustomerTableListWithType:1 status:1 customerTableList:_customerTableList];
+//    _customerTableZoneList = [CustomerTable getCustomerTableZoneListWithType:1 status:1 customerTableList:_customerTableList];
+    _customerTableZoneList = [CustomerTable getCustomerTableZoneListWithCustomerTableList:_customerTableList];
+
     
     _filterCustomerTableList = _customerTableList;
     

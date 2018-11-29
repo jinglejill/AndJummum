@@ -5,13 +5,13 @@
 	<key>Key</key>
 	<string>jmmom</string>
 	<key>DomainName</key>
-	<string>http://www.jummum.co/App/AND_JUMMUM1.2.1/</string>
+	<string>http://www.jummum.co/app/AND_JUMMUM_1.3/</string>
 	<key>PingAddress</key>
 	<string>www.google.com</string>
 	<key>SubjectNoConnection</key>
 	<string>No network connection</string>
 	<key>DetailNoConnection</key>
-	<string>You must be connected to the internet to use this app.</string>
+	<string>The Internet connection appears to be offline</string>
 	<key>BundleID</key>
 	<string>com.JummumCo.Jummum</string>
 </dict>

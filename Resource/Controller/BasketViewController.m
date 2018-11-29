@@ -23,7 +23,7 @@
 #import "MenuType.h"
 #import "MenuNote.h"
 #import "CreditCard.h"
-
+#import "VoucherCode.h"
 
 #import "Utility.h"
 #import "Setting.h"
@@ -173,7 +173,7 @@ static NSString * const reuseIdentifierNote = @"CustomTableViewCellNote";
     if([[segue identifier] isEqualToString:@"segNote"])
     {
         NoteViewController *vc = segue.destinationViewController;
-        vc.noteList = [MenuNote getNoteListWithMenuID:_orderTaking.menuID];
+        vc.noteList = [MenuNote getNoteListWithMenuID:_orderTaking.menuID branchID:branch.branchID];
         vc.orderTaking = _orderTaking;
         vc.branch = branch;
     }
@@ -339,8 +339,10 @@ static NSString * const reuseIdentifierNote = @"CustomTableViewCellNote";
         cell.lblTotalPrice.text = strTotalPrice;
         
 
-        
-        NSString *imageFileName = [Utility isStringEmpty:menu.imageUrl]?@"./Image/NoImage.jpg":[NSString stringWithFormat:@"./%@/Image/Menu/%@",branch.dbName,menu.imageUrl];
+        NSString *strPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+        NSString *noImageFileName = [NSString stringWithFormat:@"%@/JMM/%@/Image/NoImage.jpg",strPath,branch.dbName];
+        NSString *imageFileName = [NSString stringWithFormat:@"%@/JMM/%@/Image/Menu/%@",strPath,branch.dbName,menu.imageUrl];
+        imageFileName = [Utility isStringEmpty:menu.imageUrl]?noImageFileName:imageFileName;
         UIImage *image = [Utility getImageFromCache:imageFileName];
         if(image)
         {
@@ -418,7 +420,6 @@ static NSString * const reuseIdentifierNote = @"CustomTableViewCellNote";
                 strTotal = [Utility addPrefixBahtSymbol:strTotal];
                 cell.lblTitle.text = strTitle;
                 cell.lblAmount.text = strTotal;
-                cell.vwTopBorder.hidden = YES;
                 cell.lblTitle.font = [UIFont fontWithName:@"Prompt-SemiBold" size:15];
                 cell.lblTitle.textColor = cSystem4;
                 cell.lblAmount.font = [UIFont fontWithName:@"Prompt-SemiBold" size:15];
@@ -438,7 +439,7 @@ static NSString * const reuseIdentifierNote = @"CustomTableViewCellNote";
         
         {
             NSString *message = [Language getText:@"เพิ่มโน้ต"];
-            NSString *message2 = [Language getText:@"จานที่ %ld"];
+            NSString *message2 = [Language getText:@"No.%ld"];
             CustomTableViewCellNote *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifierNote];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
@@ -466,7 +467,7 @@ static NSString * const reuseIdentifierNote = @"CustomTableViewCellNote";
                 {
                     UIFont *font = [UIFont fontWithName:@"Prompt-Regular" size:11];
                     NSDictionary *attribute = @{NSUnderlineStyleAttributeName: @(NSUnderlineStyleSingle),NSFontAttributeName: font};
-                    attrStringRemove = [[NSMutableAttributedString alloc] initWithString:[Language getText:@"ไม่ใส่"] attributes:attribute];
+                    attrStringRemove = [[NSMutableAttributedString alloc] initWithString:[Language getText:branch.wordNo] attributes:attribute];
                     
                     
                     UIFont *font2 = [UIFont fontWithName:@"Prompt-Regular" size:11];
@@ -480,7 +481,7 @@ static NSString * const reuseIdentifierNote = @"CustomTableViewCellNote";
                 {
                     UIFont *font = [UIFont fontWithName:@"Prompt-Regular" size:11];
                     NSDictionary *attribute = @{NSUnderlineStyleAttributeName: @(NSUnderlineStyleSingle),NSFontAttributeName: font};
-                    attrStringAdd = [[NSMutableAttributedString alloc] initWithString:[Language getText:@"เพิ่ม"] attributes:attribute];
+                    attrStringAdd = [[NSMutableAttributedString alloc] initWithString:[Language getText:branch.wordAdd] attributes:attribute];
                     
                     
                     UIFont *font2 = [UIFont fontWithName:@"Prompt-Regular" size:11];
@@ -514,14 +515,10 @@ static NSString * const reuseIdentifierNote = @"CustomTableViewCellNote";
                 cell.txtNote.attributedText = strAllNote;
                 
                 
-                float sumNotePrice = [OrderNote getSumNotePriceWithOrderTakingID:orderTaking.orderTakingID];
+                float sumNotePrice = orderTaking.notePrice;// [OrderNote getSumNotePriceWithOrderTakingID:orderTaking.orderTakingID branchID:branch.branchID];
                 NSString *strSumNotePrice = [Utility formatDecimal:sumNotePrice withMinFraction:0 andMaxFraction:0];
-                strSumNotePrice = [NSString stringWithFormat:@"+%@",strSumNotePrice];
-                cell.lblTotalNotePrice.text = strSumNotePrice;
-                if(sumNotePrice == 0)
-                {
-                    cell.lblTotalNotePrice.text = @"";
-                }
+                strSumNotePrice = sumNotePrice>0?[NSString stringWithFormat:@"+%@",strSumNotePrice]:strSumNotePrice;
+                cell.lblTotalNotePrice.text = sumNotePrice==0?@"":strSumNotePrice;                
             }
             [cell.longPressGestureRecognizer addTarget:self action:@selector(handleLongPress:)];
             [cell.txtNote addGestureRecognizer:cell.longPressGestureRecognizer];
@@ -677,6 +674,7 @@ static NSString * const reuseIdentifierNote = @"CustomTableViewCellNote";
                               {
                                   [OrderTaking removeCurrentOrderTakingList];
                                   [CreditCard removeCurrentCreditCard];
+                                  [SaveReceipt removeCurrentSaveReceipt];
                                   [tbvOrder reloadData];
                                   [tbvTotal reloadData];
                               }];
@@ -899,12 +897,11 @@ static NSString * const reuseIdentifierNote = @"CustomTableViewCellNote";
                                           
                                           
                                           //update note id list in text
-                                          orderTaking.noteIDListInText = [OrderNote getNoteIDListInTextWithOrderTakingID:orderTaking.orderTakingID];
+                                          orderTaking.noteIDListInText = _copyOrderTaking.noteIDListInText;
                                           
                                           
                                           //update ordertaking price
-                                          float sumNotePrice = [OrderNote getSumNotePriceWithOrderTakingID:orderTaking.orderTakingID];
-                                          orderTaking.notePrice = sumNotePrice;
+                                          orderTaking.notePrice = _copyOrderTaking.notePrice;// sumNotePrice;
                                           orderTaking.modifiedUser = [Utility modifiedUser];
                                           orderTaking.modifiedDate = [Utility currentDateTime];
                                       }
@@ -1062,12 +1059,11 @@ static NSString * const reuseIdentifierNote = @"CustomTableViewCellNote";
         
         
         //update note id list in text
-        orderTaking.noteIDListInText = [OrderNote getNoteIDListInTextWithOrderTakingID:orderTaking.orderTakingID];
+        orderTaking.noteIDListInText = _copyOrderTaking.noteIDListInText;
         
         
         //update ordertaking price
-        float sumNotePrice = [OrderNote getSumNotePriceWithOrderTakingID:orderTaking.orderTakingID];
-        orderTaking.notePrice = sumNotePrice;
+        orderTaking.notePrice = _copyOrderTaking.notePrice;//sumNotePrice;
         orderTaking.modifiedUser = [Utility modifiedUser];
         orderTaking.modifiedDate = [Utility currentDateTime];
         
@@ -1098,8 +1094,12 @@ static NSString * const reuseIdentifierNote = @"CustomTableViewCellNote";
 }
 
 -(void)checkOut:(id)sender
-{    
-    [self performSegueWithIdentifier:@"segCreditCardAndOrderSummary" sender:self];
+{
+    NSMutableArray *orderTakingList = [OrderTaking getCurrentOrderTakingList];
+    if([orderTakingList count] != 0)
+    {
+        [self performSegueWithIdentifier:@"segCreditCardAndOrderSummary" sender:self];
+    }    
 }
 
 -(void)takeAway:(id)sender

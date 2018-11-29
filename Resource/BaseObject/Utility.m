@@ -487,12 +487,6 @@ extern NSString *globalBundleID;
         case urlBranchSearchGetList:
             url = @"JMMBranchSearchGetList.php";
             break;
-        case urlBranchSearchMoreGetList:
-            url = @"JMMBranchSearchMoreGetList.php";
-            break;
-        case urlHotDealWithBranchGetList:
-            url = @"JMMHotDealWithBranchIDGetList.php";
-            break;
         case urlRewardRedemptionWithBranchGetList:
             url = @"JMMRewardRedemptionWithBranchIDGetList.php";
             break;
@@ -553,12 +547,6 @@ extern NSString *globalBundleID;
         case urlReceiptDisputeRatingGet:
             url = @"JMMReceiptDisputeRatingGet.php";
             break;
-        case urlReceiptDisputeRatingAllAfterReceiptGet:
-            url = @"JMMReceiptDisputeRatingAllAfterReceiptGet.php";
-            break;
-        case urlOpeningTimeGet:
-            url = @"JMMOpeningTimeGet.php";
-            break;
         case urlOpeningTimeMenuBelongToBuffetGet:
             url = @"JMMOpeningTimeMenuBelongToBuffetGet.php";
             break;
@@ -597,6 +585,42 @@ extern NSString *globalBundleID;
             break;
         case urlRewardRedemptionLuckyDrawGet:
             url = @"JMMRewardRedemptionLuckyDrawGet.php";
+            break;
+        case urlBuffetMenuMapInsert:
+            url = @"JMMBuffetMenuMapInsert.php";
+            break;
+        case urlBuffetMenuMapUpdate:
+            url = @"JMMBuffetMenuMapUpdate.php";
+            break;
+        case urlBuffetMenuMapDelete:
+            url = @"JMMBuffetMenuMapDelete.php";
+            break;
+        case urlBuffetMenuMapInsertList:
+            url = @"JMMBuffetMenuMapInsertList.php";
+            break;
+        case urlBuffetMenuMapUpdateList:
+            url = @"JMMBuffetMenuMapUpdateList.php";
+            break;
+        case urlBuffetMenuMapDeleteList:
+            url = @"JMMBuffetMenuMapDeleteList.php";
+            break;
+        case urlReceiptSummaryPageGetList:
+            url = @"JMMReceiptSummaryPageGetList.php";
+            break;
+        case urlOrderJoiningShareQrGet:
+            url = @"JMMOrderJoiningShareQrGet.php";
+            break;
+        case urlOrderJoiningScanQrInsert:
+            url = @"JMMOrderJoiningScanQrInsert.php";
+            break;
+        case urlOrderJoiningPageGetList:
+            url = @"JMMOrderJoiningPageGetList.php";
+            break;
+        case urlSaveOrderInsertList:
+            url = @"JMMSaveOrderInsertList.php";
+            break;
+        case urlOrderItAgainGetList:
+            url = @"JMMOrderItAgainGetList.php";
             break;
         default:
             break;
@@ -1728,6 +1752,20 @@ extern NSString *globalBundleID;
     }
 }
 
++ (void)updateSharedDataList:(NSMutableArray *)itemList className:(NSString *)className branchID:(NSInteger)branchID
+{
+    Class class = NSClassFromString([NSString stringWithFormat:@"Shared%@",className]);
+    SEL selector = NSSelectorFromString([NSString stringWithFormat:@"shared%@",className]);
+    SEL selectorList = NSSelectorFromString([NSString stringWithFormat:@"%@List",[Utility makeFirstLetterLowerCase:className]]);
+    NSMutableArray *dataList = [[class performSelector:selector] performSelector:selectorList];
+
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"branchID = %ld",branchID];
+    NSArray *filterArray = [dataList filteredArrayUsingPredicate:predicate];
+
+    [dataList removeObjectsInArray:filterArray];
+    [dataList addObjectsFromArray:itemList];
+}
+
 + (void)addUpdateObject:(NSObject *)object
 {
     Class classDB = [object class];
@@ -1787,108 +1825,6 @@ extern NSString *globalBundleID;
     }
 }
 
-+(BOOL)updateDataList:(NSArray *)itemList dataList:(NSMutableArray *)dataList
-{
-    BOOL update = 0;
-    for(NSObject *object in itemList)
-    {
-        Class classDB = [object class];
-        NSString *className = NSStringFromClass(classDB);
-        
-        
-        NSString *propertyName = [NSString stringWithFormat:@"%@ID",[Utility makeFirstLetterLowerCase:className]];
-        NSString *propertyNamePredicate = [NSString stringWithFormat:@"_%@",propertyName];
-        NSInteger value = [[object valueForKey:propertyName] integerValue];
-        
-        
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K = %ld",propertyNamePredicate,value];
-        NSArray *filterArray = [dataList filteredArrayUsingPredicate:predicate];
-        
-        
-        
-        if([filterArray count]==0)
-        {
-            update = 1;
-            [dataList addObject:object];
-        }
-        else
-        {
-            NSObject *filterObject = filterArray[0];
-            NSDate *dateObject = [object valueForKey:@"modifiedDate"];
-            NSDate *dateFilterObject = [filterObject valueForKey:@"modifiedDate"];
-            NSComparisonResult result = [dateFilterObject compare:dateObject];
-            if(result == NSOrderedAscending)
-            {
-                //update
-                update = 1;
-                unsigned int propertyCount = 0;
-                objc_property_t * properties = class_copyPropertyList([object class], &propertyCount);
-                
-                for (unsigned int i = 0; i < propertyCount; ++i)
-                {
-                    objc_property_t property = properties[i];
-                    const char * name = property_getName(property);
-                    NSString *key = [NSString stringWithUTF8String:name];
-                    
-                    
-                    [filterObject setValue:[object valueForKey:key] forKey:key];
-                }
-            }
-        }
-    }
-    return update;
-}
-
-+ (void)addUpdateObject:(NSObject *)object dataList:(NSMutableArray *)dataList
-{
-    
-}
-
-+(void)updateItemIfModify:(NSObject *)object
-{
-    Class classDB = [object class];
-    NSString *className = NSStringFromClass(classDB);
-    Class class = NSClassFromString([NSString stringWithFormat:@"Shared%@",className]);
-    SEL selector = NSSelectorFromString([NSString stringWithFormat:@"shared%@",className]);
-    SEL selectorList = NSSelectorFromString([NSString stringWithFormat:@"%@List",[Utility makeFirstLetterLowerCase:className]]);
-    NSMutableArray *dataList = [[class performSelector:selector] performSelector:selectorList];
-    
-    
-    NSString *propertyName = [NSString stringWithFormat:@"%@ID",[Utility makeFirstLetterLowerCase:className]];
-    NSString *propertyNamePredicate = [NSString stringWithFormat:@"_%@",propertyName];
-    NSInteger value = [[object valueForKey:propertyName] integerValue];
-    
-    
-    
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K = %ld",propertyNamePredicate,value];
-    NSArray *filterArray = [dataList filteredArrayUsingPredicate:predicate];
-    
-    
-    if([filterArray count]>0)
-    {
-        NSObject *filterObject = filterArray[0];
-        NSDate *dateObject = [object valueForKey:@"modifiedDate"];
-        NSDate *dateFilterObject = [filterObject valueForKey:@"modifiedDate"];
-        NSComparisonResult result = [dateFilterObject compare:dateObject];
-        if(result == NSOrderedAscending)
-        {
-            //update
-            unsigned int propertyCount = 0;
-            objc_property_t * properties = class_copyPropertyList([object class], &propertyCount);
-            
-            for (unsigned int i = 0; i < propertyCount; ++i)
-            {
-                objc_property_t property = properties[i];
-                const char * name = property_getName(property);
-                NSString *key = [NSString stringWithUTF8String:name];
-                
-                
-                [filterObject setValue:[object valueForKey:key] forKey:key];
-            }
-        }
-    }
-}
-
 +(UIImage *)getImageFromCache:(NSString *)imageName
 {
     NSRange needleRange = NSMakeRange(2,[imageName length]-2);
@@ -1909,6 +1845,26 @@ extern NSString *globalBundleID;
     NSString *cachedFolderPath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0];
     NSString *cachedImagePath = [cachedFolderPath stringByAppendingPathComponent:saveImageName];
     [UIImagePNGRepresentation(image) writeToFile:cachedImagePath atomically:YES];
+}
+
++(void)deleteFileInCache:(NSString *)fileName
+{
+    NSLog(@"delete filename:%@",fileName);
+    NSError *error;
+    
+    if([[NSFileManager defaultManager] isDeletableFileAtPath:fileName])
+    {
+        [[NSFileManager defaultManager]removeItemAtPath:fileName error:&error];
+        if (error)
+        {
+          // file deletion failed
+          NSLog(@"file deletion failed: %@",error.localizedDescription);
+        }
+    }
+    else
+    {
+        NSLog(@"not deletable");
+    }
 }
 
 +(NSString *)formatPhoneNo:(NSString *)phoneNo

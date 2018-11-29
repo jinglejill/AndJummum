@@ -26,8 +26,10 @@
 @property (nonatomic,retain) UILabel *lblAlertMsg;
 @property (nonatomic,retain) UILabel *lblWaiting;
 @property (nonatomic,retain) UIToolbar *toolBar;
+@property (nonatomic,retain) UIToolbar *toolBarNext;
 @property (nonatomic,retain) Receipt *selectedReceipt;
 @property (nonatomic) BOOL showOrderDetail;
+@property (nonatomic) BOOL showReceiptSummary;
 
 
 -(void)setCurrentVc;
@@ -74,4 +76,8 @@
 -(UIImage *)imageFromView:(UIView *)view;
 -(NSAttributedString *)setAttributedString:(NSString *)title text:(NSString *)text;
 -(void)dismissKeyboard;
+- (UIImage *)addWatermarkOnImage:(UIImage *)origin withImage:(UIImage *)template;
+- (UIImage *)imageByScalingProportionallyToSize:(CGSize)targetSize sourceImage:(UIImage *)sourceImage;
+- (UIImage *)imageWithImage:(UIImage *)image convertToSize:(CGSize)size;
+- (UIImage *)cropImageByImage:(UIImage *)imageToCrop toRect:(CGRect)rect;
 @end

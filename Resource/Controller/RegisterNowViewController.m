@@ -32,7 +32,27 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
 @synthesize bottomViewHeight;
 @synthesize userAccount;
 @synthesize btnCreateAccount;
+@synthesize btnBack;
+@synthesize btnBackWidth;
 
+
+-(BOOL)textFieldShouldReturn:(UITextField*)textField
+{
+    NSInteger nextTag = textField.tag + 1;
+    // Try to find next responder
+    UIResponder* nextResponder = [self.view viewWithTag:nextTag];
+    if (nextResponder)
+    {
+        // Found next responder, so set it.
+        [nextResponder becomeFirstResponder];
+    }
+    else
+    {
+        // Not found, so remove keyboard.
+        [textField resignFirstResponder];
+    }
+    return NO; // We do not want UITextField to insert line-breaks.
+}
 
 -(void)viewDidLayoutSubviews
 {
@@ -44,18 +64,51 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
     topViewHeight.constant = topPadding == 0?20:topPadding;
     
     
-    [btnCreateAccount setTitle:[Language getText:@"สร้างบัญชี"] forState:UIControlStateNormal];
+    NSString *btnNext = userAccount?[Language getText:@"เริ่มใช้งาน"]:[Language getText:@"สร้างบัญชี"];
+    [btnCreateAccount setTitle:btnNext forState:UIControlStateNormal];
+    [btnBack setTitle:[Language getText:@"ย้อนกลับ"] forState:UIControlStateNormal];
+    btnBackWidth.constant = self.view.frame.size.width/4;
+    
+    
+    UIImage *image;
+    if([[self deviceName] rangeOfString:@"iPhone X" options:NSCaseInsensitiveSearch].location != NSNotFound)
+    {
+        image = [UIImage imageNamed:@"JummumRegisterBgIphoneX.jpg"];
+    }
+    else if ([[self deviceName] rangeOfString:@"iPhone" options:NSCaseInsensitiveSearch].location != NSNotFound)
+    {
+        image = [UIImage imageNamed:@"JummumRegisterBg.jpg"];
+    }
+    else if ([[self deviceName] rangeOfString:@"iPad" options:NSCaseInsensitiveSearch].location != NSNotFound)
+    {
+        image = [UIImage imageNamed:@"JummumRegisterBgIpad.jpg"];
+    }
+    else
+    {
+        image = [UIImage imageNamed:@"JummumRegisterBg.jpg"];
+    }
+    image = [self tranlucentWithAlpha:0.9 image:image];
+    UIImageView *tempImageView = [[UIImageView alloc] initWithImage:image];
+    [tempImageView setFrame:tbvData.frame];
+
+//    tbvData.backgroundView = tempImageView;
+//    tbvData.backgroundView.backgroundColor = [cSystem1 colorWithAlphaComponent:0.9];
+
+
+    
+    NSLog(@"width:%f,height:%f",tbvData.frame.size.width,tbvData.frame.size.height);
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
     if(userAccount && !_updateBirthDateAndPhoneNo)
     {
         _userAccount = userAccount;
         [tbvData reloadData];
-        NSString *message = [Language getText:@"คุณล็อคอินผ่าน facebook สำเร็จแล้ว กรุณาใส่วันเกิดและเบอร์โทรศัพท์ เพื่อเราจะได้สร้างบัญชีสำหรับใช้งานให้คุณ"];
-        [self showAlert:@"" message:message];
+        NSString *message = [Language getText:@"คุณล็อคอินผ่าน facebook สำเร็จแล้ว กรุณาอัพเดตวันเกิด และเบอร์โทรศัพท์ของคุณ"];
+        [self showAlert:@"" message:message method:@selector(setResponder)];
     }
 }
 
@@ -170,13 +223,13 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
     // Do any additional setup after loading the view.
     
     
-    NSString *title = [Language getText:@"สร้างบัญชีใหม่"];
+    NSString *title = userAccount?[Language getText:@"ข้อมูลส่วนตัว"]:[Language getText:@"สร้างบัญชีใหม่"];
     lblNavTitle.text = title;
     _userAccount = [[UserAccount alloc]init];
     tbvData.delegate = self;
     tbvData.dataSource = self;
     tbvData.scrollEnabled = NO;
-    
+    [tbvData setSeparatorColor:[cSystem4 colorWithAlphaComponent:0.6]];
     
     
     [dtPicker setTimeZone:[NSTimeZone timeZoneWithName:@"GMT"]];
@@ -229,6 +282,7 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
     CustomTableViewCellText *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifierText];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
+    
     if(userAccount)
     {
         switch (item)
@@ -244,6 +298,7 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
                 [cell.textValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
                 cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeNone;
                 cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
+                cell.textValue.returnKeyType = UIReturnKeyNext;
             }
                 break;
             case 1:
@@ -257,6 +312,7 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
                 [cell.textValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
                 cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeWords;
                 cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
+                cell.textValue.returnKeyType = UIReturnKeyNext;
             }
                 break;
             case 2:
@@ -270,6 +326,7 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
                 [cell.textValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
                 cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeWords;
                 cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
+                cell.textValue.returnKeyType = UIReturnKeyNext;
             }
                 break;
             case 3:
@@ -280,7 +337,7 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
                 cell.textValue.inputView = dtPicker;
                 cell.textValue.text = [Utility dateToString:_userAccount.birthDate toFormat:@"d MMM yyyy"];
                 cell.textValue.enabled = YES;
-                [cell.textValue setInputAccessoryView:self.toolBar];
+                [cell.textValue setInputAccessoryView:self.toolBarNext];
                 [cell.textValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
                 cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeNone;
                 cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
@@ -319,6 +376,7 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
                 [cell.textValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
                 cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeNone;
                 cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
+                cell.textValue.returnKeyType = UIReturnKeyNext;
             }
                 break;
             case 1:
@@ -333,6 +391,7 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
                 [cell.textValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
                 cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeNone;
                 cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
+                cell.textValue.returnKeyType = UIReturnKeyNext;
             }
                 break;
             case 2:
@@ -346,6 +405,7 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
                 [cell.textValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
                 cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeWords;
                 cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
+                cell.textValue.returnKeyType = UIReturnKeyNext;
             }
                 break;
             case 3:
@@ -359,6 +419,7 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
                 [cell.textValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
                 cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeWords;
                 cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
+                cell.textValue.returnKeyType = UIReturnKeyNext;
             }
                 break;
             case 4:
@@ -369,7 +430,7 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
                 cell.textValue.inputView = dtPicker;
                 cell.textValue.text = [Utility dateToString:_userAccount.birthDate toFormat:@"d MMM yyyy"];
                 cell.textValue.enabled = YES;
-                [cell.textValue setInputAccessoryView:self.toolBar];
+                [cell.textValue setInputAccessoryView:self.toolBarNext];
                 [cell.textValue removeTarget:self action:nil forControlEvents:UIControlEventAllEvents];
                 cell.textValue.autocapitalizationType = UITextAutocapitalizationTypeNone;
                 cell.textValue.clearButtonMode = UITextFieldViewModeWhileEditing;
@@ -394,6 +455,7 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
         }
     }
     
+    cell.textValue.attributedPlaceholder = [[NSAttributedString alloc] initWithString:cell.textValue.placeholder attributes:@{NSForegroundColorAttributeName: [cSystem4 colorWithAlphaComponent:0.6]}];
     
     
     return cell;
@@ -406,13 +468,44 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
 
 - (void)tableView: (UITableView*)tableView willDisplayCell: (UITableViewCell*)cell forRowAtIndexPath: (NSIndexPath*)indexPath
 {
-    cell.backgroundColor = [UIColor whiteColor];
+//    cell.backgroundColor = [UIColor clearColor];
+    cell.backgroundColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.2];
     [cell setSeparatorInset:UIEdgeInsetsMake(16, 16, 16, 16)];
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
+}
+
+ -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 44)];
+    /* Create custom view to display section header... */
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, tableView.frame.size.width, 44)];
+    label.font = [UIFont fontWithName:@"Prompt-SemiBold" size:14];
+    label.textColor = cSystem1;
+     NSString *string = [Language getText:@"ใส่ข้อมูลด้านล่าง แล้วเตรียม มั่ม มั่ม ได้เลย !!"];
+    /* Section header is in 0th index... */
+    [label setText:string];
+    [view addSubview:label];
+    view.backgroundColor = [UIColor clearColor];
+//    [view setBackgroundColor:[UIColor colorWithRed:166/255.0 green:177/255.0 blue:186/255.0 alpha:1.0]]; //your background color...
+    return view;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 44;
+}
+
+- (UIImage *)tranlucentWithAlpha:(CGFloat)alpha image:(UIImage *)image
+{
+    UIGraphicsBeginImageContextWithOptions(image.size, NO, image.scale);
+    [image drawAtPoint:CGPointZero blendMode:kCGBlendModeNormal alpha:alpha];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return newImage;
 }
 
 - (IBAction)createAccount:(id)sender
@@ -448,6 +541,9 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
 - (IBAction)goBack:(id)sender
 {
     [self performSegueWithIdentifier:@"segUnwindToLogIn" sender:self];
+}
+
+- (IBAction)skip:(id)sender {
 }
 
 -(void)itemsDownloaded:(NSArray *)items
@@ -569,4 +665,16 @@ static NSString * const reuseIdentifierText = @"CustomTableViewCellText";
     txtPhoneNo.text = [Utility formatPhoneNo:[Utility removeDashAndSpaceAndParenthesis:txtPhoneNo.text]];
 }
 
+-(void)goToNextResponder:(id)sender
+{
+    UITextField *textField = [self.view viewWithTag:6];
+    [textField becomeFirstResponder];
+}
+
+-(void)setResponder
+{
+    UITextField *textField = [self.view viewWithTag:5
+    ];
+    [textField becomeFirstResponder];
+}
 @end

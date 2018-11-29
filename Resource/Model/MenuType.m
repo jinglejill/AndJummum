@@ -175,20 +175,6 @@
     NSArray *filterArray = [dataList filteredArrayUsingPredicate:predicate];
     return [filterArray mutableCopy];
 }
-
-+(NSMutableArray * )getMenuTypeListALarCarteWithBranchID:(NSInteger)branchID
-{
-    NSMutableArray *menuTypeList = [[NSMutableArray alloc]init];
-    NSMutableArray *menuList = [Menu getMenuListALaCarteWithBranchID:branchID];
-    NSSet *menuTypeIDSet = [NSSet setWithArray:[menuList valueForKey:@"_menuTypeID"]];
-    for(NSNumber *menuTypeID in menuTypeIDSet)
-    {
-        MenuType *menuType = [MenuType getMenuType:[menuTypeID integerValue] branchID:branchID];
-        [menuTypeList addObject:menuType];
-    }
-    
-    return menuTypeList;
-}
     
 +(MenuType *)getMenuType:(NSInteger)menuTypeID branchID:(NSInteger)branchID
 {
@@ -202,14 +188,24 @@
     return nil;
 }
     
-+(NSMutableArray *)getMenuTypeListWithMenuList:(NSMutableArray *)menuList
-{
-    NSMutableSet *menuTypeSet = [[NSMutableSet alloc]init];
-    for(Menu *item in menuList)
-    {
-        MenuType *menuType = [MenuType getMenuType:item.menuTypeID branchID:item.branchID];
-        [menuTypeSet addObject:menuType];
-    }
-    return [[menuTypeSet allObjects] mutableCopy];
-}
+//+(NSMutableArray *)getMenuTypeListWithMenuList:(NSMutableArray *)menuList
+//{
+//    NSMutableSet *menuTypeSet = [[NSMutableSet alloc]init];
+//    for(Menu *item in menuList)
+//    {
+//        MenuType *menuType = [MenuType getMenuType:item.menuTypeID branchID:item.branchID];
+//        [menuTypeSet addObject:menuType];
+//    }
+//    
+//    NSMutableArray *sortArray = [self sortList:[[menuTypeSet allObjects] mutableCopy]];
+//    NSMutableArray *recommendedList = [Menu getMenuListRecommendedWithMenuList:menuList];
+//    if([recommendedList count]>0)
+//    {
+//        MenuType *menuType = [[MenuType alloc]initWithName:@"แนะนำ" nameEn:@"Recommended" allowDiscount:0 color:@"" orderNo:0 status:1];
+//        [sortArray insertObject:menuType atIndex:0];
+//    }
+//    
+//    return sortArray;
+//}
+
 @end

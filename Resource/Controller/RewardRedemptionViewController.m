@@ -45,7 +45,8 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
 @synthesize fromMenuMyReward;
 @synthesize topViewHeight;
 @synthesize bottomLabelHeight;
-
+@synthesize goToMenuSelection;
+@synthesize branch;
 
 -(IBAction)unwindToRewardRedemption:(UIStoryboardSegue *)segue
 {
@@ -169,7 +170,7 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
         _promoCode = promoCode.code;
         
         
-        if(rewardRedemption.discountGroupMenuID)
+        if(rewardRedemption.mainBranchID)
         {
             cell.btnCopy.hidden = NO;
             [cell.btnCopy setTitle:[Language getText:@"สั่งเลย"] forState:UIControlStateNormal];
@@ -348,25 +349,35 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
         }
         else
         {
-            NSMutableArray *discountGroupMenuMapList = items[6];
-            NSMutableArray *orderTakingList = [[NSMutableArray alloc]init];
-            for(int i=0; i<[discountGroupMenuMapList count]; i++)
+            NSMutableArray *discountGroupMenuMapList = items[3];
+            if(rewardRedemption.discountGroupMenuID && [discountGroupMenuMapList count]>0)
             {
-                DiscountGroupMenuMap *discountGroupMenuMap = discountGroupMenuMapList[i];
-                Menu *menu = [Menu getMenu:discountGroupMenuMap.menuID branchID:rewardRedemption.mainBranchID];
-                SpecialPriceProgram *specialPriceProgram = [SpecialPriceProgram getSpecialPriceProgramTodayWithMenuID:discountGroupMenuMap.menuID branchID:rewardRedemption.mainBranchID];
-                float specialPrice = specialPriceProgram?specialPriceProgram.specialPrice:menu.price;
-                
-                
-                for(int j=0; j<discountGroupMenuMap.quantity; j++)
+                NSMutableArray *orderTakingList = [[NSMutableArray alloc]init];
+                for(int i=0; i<[discountGroupMenuMapList count]; i++)
                 {
-                    OrderTaking *orderTaking = [[OrderTaking alloc]initWithBranchID:rewardRedemption.mainBranchID customerTableID:0 menuID:discountGroupMenuMap.menuID quantity:1 specialPrice:specialPrice price:menu.price takeAway:0 takeAwayPrice:0 noteIDListInText:@"" notePrice:0 orderNo:0 status:1 receiptID:0];
-                    [orderTakingList addObject:orderTaking];
+                    DiscountGroupMenuMap *discountGroupMenuMap = discountGroupMenuMapList[i];
+                    Menu *menu = [Menu getMenu:discountGroupMenuMap.menuID branchID:rewardRedemption.mainBranchID];
+                    SpecialPriceProgram *specialPriceProgram = [SpecialPriceProgram getSpecialPriceProgramTodayWithMenuID:discountGroupMenuMap.menuID branchID:rewardRedemption.mainBranchID];
+                    float specialPrice = specialPriceProgram?specialPriceProgram.specialPrice:menu.price;
+                    
+                    
+                    for(int j=0; j<discountGroupMenuMap.quantity; j++)
+                    {
+                        OrderTaking *orderTaking = [[OrderTaking alloc]initWithBranchID:rewardRedemption.mainBranchID customerTableID:0 menuID:discountGroupMenuMap.menuID quantity:1 specialPrice:specialPrice price:menu.price takeAway:0 takeAwayPrice:0 noteIDListInText:@"" notePrice:0 orderNo:0 status:1 receiptID:0];
+                        [orderTakingList addObject:orderTaking];
+                        [OrderTaking addObject:orderTaking];
+                    }
                 }
+                
+                [OrderTaking setCurrentOrderTakingList:orderTakingList];
+                [self performSegueWithIdentifier:@"segCreditCardAndOrderSummary" sender:self];
             }
-            
-            [OrderTaking setCurrentOrderTakingList:orderTakingList];
-            [self performSegueWithIdentifier:@"segCreditCardAndOrderSummary" sender:self];
+            else
+            {
+                branch = [Branch getBranch:rewardRedemption.mainBranchID];
+                goToMenuSelection = 1;
+                [self performSegueWithIdentifier:@"segUnwindToMainTabBar" sender:self];
+            }
         }
     }
 }

@@ -22,7 +22,8 @@
 @property (nonatomic) NSInteger numberOfGift;
 @property (strong, nonatomic) IBOutlet UIImageView *imgVwCheck;
 @property (strong, nonatomic) IBOutlet UIButton *btnBackToHome;
-
+@property (nonatomic) NSInteger orderBuffet;
+@property (nonatomic) NSInteger goToHotDeal;
 
 
 - (IBAction)button1Clicked:(id)sender;

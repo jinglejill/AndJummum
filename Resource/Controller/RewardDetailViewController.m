@@ -106,14 +106,29 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
         
     
         
-        
-        [self.homeModel downloadImageWithFileName:rewardRedemption.imageUrl type:4 branchID:0 completionBlock:^(BOOL succeeded, UIImage *image)
-         {
-             if (succeeded)
+        NSString *strPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+        NSString *noImageFileName = [NSString stringWithFormat:@"%@/JMM/Image/NoImage.jpg",strPath];
+        NSString *imageFileName = [NSString stringWithFormat:@"%@/JMM/Image/Reward/%@",strPath,rewardRedemption.imageUrl];
+        imageFileName = [Utility isStringEmpty:rewardRedemption.imageUrl]?noImageFileName:imageFileName;
+        UIImage *image = [Utility getImageFromCache:imageFileName];
+        if(image)
+        {
+            cell.imgVwValue.image = image;
+        }
+        else
+        {
+            [self.homeModel downloadImageWithFileName:rewardRedemption.imageUrl type:4 branchID:0 completionBlock:^(BOOL succeeded, UIImage *image)
              {
-                 cell.imgVwValue.image = image;
-             }
-         }];
+                 if (succeeded)
+                 {
+                     [Utility saveImageInCache:image imageName:imageFileName];
+                     cell.imgVwValue.image = image;
+                 }
+             }];
+        }
+        
+        
+
         float imageWidth = cell.frame.size.width -2*16 > 375?375:cell.frame.size.width -2*16;
         cell.imgVwValueHeight.constant = imageWidth/16*9;
         cell.imgVwValue.contentMode = UIViewContentModeScaleAspectFit;
@@ -174,13 +189,29 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
         
         
         
-        [self.homeModel downloadImageWithFileName:rewardRedemption.imageUrl type:4 branchID:0 completionBlock:^(BOOL succeeded, UIImage *image)
-         {
-             if (succeeded)
+        NSString *strPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+        NSString *noImageFileName = [NSString stringWithFormat:@"%@/JMM/Image/NoImage.jpg",strPath];
+        NSString *imageFileName = [NSString stringWithFormat:@"%@/JMM/Image/Reward/%@",strPath,rewardRedemption.imageUrl];
+        imageFileName = [Utility isStringEmpty:rewardRedemption.imageUrl]?noImageFileName:imageFileName;
+        UIImage *image = [Utility getImageFromCache:imageFileName];
+        if(image)
+        {
+            cell.imgVwValue.image = image;
+        }
+        else
+        {
+            [self.homeModel downloadImageWithFileName:rewardRedemption.imageUrl type:4 branchID:0 completionBlock:^(BOOL succeeded, UIImage *image)
              {
-                 cell.imgVwValue.image = image;                 
-             }
-         }];
+                 if (succeeded)
+                 {
+                     [Utility saveImageInCache:image imageName:imageFileName];
+                     cell.imgVwValue.image = image;
+                 }
+             }];
+        }
+        
+        
+        
         float imageWidth = cell.frame.size.width -2*16 > 375?375:cell.frame.size.width -2*16;
         cell.imgVwValueHeight.constant = imageWidth/16*9;        
         
@@ -254,12 +285,12 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
     UIAlertAction *action1 = [UIAlertAction actionWithTitle:title
                                                      style:UIAlertActionStyleDefault handler:^(UIAlertAction *action)
                              {
-                                 NSString *message = [Language getText:@"จำนวนแต้มสะสมไม่เพียงพอ"];
-                                 if(rewardPoint.point < rewardRedemption.point)
-                                 {
-                                     [self showAlert:@"" message:message];
-                                 }
-                                 else
+//                                 NSString *message = [Language getText:@"จำนวนแต้มสะสมไม่เพียงพอ"];
+//                                 if(rewardPoint.point < rewardRedemption.point)
+//                                 {
+//                                     [self showAlert:@"" message:message];
+//                                 }
+//                                 else
                                  {
                                      UserAccount *userAccount = [UserAccount getCurrentUserAccount];
                                      _rewardPointSpent = [[RewardPoint alloc]initWithMemberID:userAccount.userAccountID receiptID:0 point:rewardRedemption.point status:-1 promoCodeID:0];
@@ -326,11 +357,11 @@ static NSString * const reuseIdentifierLabel = @"CustomTableViewCellLabel";
         _promoCode = promoCodeList[0];
         [self performSegueWithIdentifier:@"segRewardRedemption" sender:self];
     }
-    else
-    {
-        NSString *message = [Language getText:@"จำนวนสิทธิ์ครบแล้ว"];
-        [self showAlert:@"" message:message];
-    }
+//    else
+//    {
+//        NSString *message = [Language getText:@"จำนวนสิทธิ์ครบแล้ว"];
+//        [self showAlert:@"" message:message];
+//    }
 }
 
 -(void)expandCollapse:(id)sender
