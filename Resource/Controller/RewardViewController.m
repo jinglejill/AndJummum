@@ -30,6 +30,7 @@
     BOOL _lastItemReached;
     NSInteger _page;
     NSInteger _perPage;
+    BOOL _viewDidLoad;
 }
 
 @property (nonatomic)        BOOL           searchBarActive;
@@ -61,7 +62,7 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
 -(void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;    
+    UIWindow *window = UIApplication.sharedApplication.keyWindow;
     
     float topPadding = window.safeAreaInsets.top;
     topViewHeight.constant = topPadding == 0?20:topPadding;
@@ -78,7 +79,20 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
 {
     [super viewDidAppear:animated];
     
-    
+    if(_viewDidLoad)
+    {
+        _viewDidLoad = false;
+    }
+    else
+    {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+        CustomTableViewCellSearchBar *cell = [tbvData cellForRowAtIndexPath:indexPath];
+        
+        UserAccount *userAccount = [UserAccount getCurrentUserAccount];
+        self.homeModel = [[HomeModel alloc]init];
+        self.homeModel.delegate = self;
+        [self.homeModel downloadItems:dbRewardPoint withData:@[cell.sbText.text,@(_page),@(_perPage),userAccount]];
+    }
 }
 
 - (void)viewDidLoad
@@ -111,6 +125,7 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
     }
     
     
+    _viewDidLoad = YES;
     [self loadingOverlayView];
     UserAccount *userAccount = [UserAccount getCurrentUserAccount];
     self.homeModel = [[HomeModel alloc]init];
@@ -150,7 +165,7 @@ static NSString * const reuseIdentifierLabelDetailLabelWithImage = @"CustomTable
     
     
     if(section == 0)
-    {        
+    {
         CustomTableViewCellSearchBar *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifierSearchBar];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.sbText.delegate = self;
